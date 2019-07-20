@@ -24,9 +24,10 @@ public class MainActivity extends AppCompatActivity {
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     Map map = mapFragment.getMap();
+
                     // ...
                 } else {
-                    System.out.println("ERROR: Cannot initialize SupportMapFragment");
+                    System.out.println("ERROR: Cannot initialize SupportMapFragment: " + error);
                 }
             }
         });
