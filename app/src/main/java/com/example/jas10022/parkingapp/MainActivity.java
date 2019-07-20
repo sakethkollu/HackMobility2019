@@ -1,6 +1,11 @@
 package com.example.jas10022.parkingapp;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,12 +34,14 @@ import com.here.android.mpa.mapping.SupportMapFragment;
 
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements LocationListener{
 
     //This is the refrence of the Firebase Stoarage
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    LocationManager locationManager;
+    LocationListener locationListener;
 
 
     @Override
@@ -47,6 +54,16 @@ public class MainActivity extends AppCompatActivity{
         // retrieve the map that is associated to the fragment
 
         //jas
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+
+            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },
+                    LocationService.MY_PERMISSION_ACCESS_COURSE_LOCATION );
+
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+
 
         mapFragment.init(new OnEngineInitListener() {
             @Override
@@ -168,5 +185,25 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         });
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d("Latitude","disable");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d("Latitude","enable");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("Latitude","status");
     }
 }
