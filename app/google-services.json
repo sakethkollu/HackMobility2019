@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "573478317434",
+    "firebase_url": "https://parkr-1ad06.firebaseio.com",
+    "project_id": "parkr-1ad06",
+    "storage_bucket": "parkr-1ad06.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573478317434:android:3248b2e5cc7343c5",
+        "android_client_info": {
+          "package_name": "com.example.jas10022.parkingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "573478317434-d6scjuhb76sitg90tqhhmbl7de2pl22n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClRFgmWvJcKRKeinWUH13mWGsBKB7cSaY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "573478317434-d6scjuhb76sitg90tqhhmbl7de2pl22n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
