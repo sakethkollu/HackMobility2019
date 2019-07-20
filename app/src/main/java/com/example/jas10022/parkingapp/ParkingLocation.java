@@ -5,7 +5,7 @@ public class ParkingLocation {
     private double rating;
     private int num_ratings = 0;
 
-    public ParkingLocation(Coordinate location, int rating, int num_ratings) {
+    public ParkingLocation(Coordinate location, double rating, int num_ratings) {
         this.location = location;
         this.rating = rating;
         this.num_ratings = num_ratings;
