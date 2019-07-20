@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     //This is the refrence of the Firebase Stoarage
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference("parkr-1ad06");
+    DatabaseReference myRef = database.getReference();
 
 
     @Override
@@ -52,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
                             Double longitude = Double.parseDouble(dataSnapshot.child("Longitude").getValue().toString());
                             Double latitude =  Double.parseDouble(dataSnapshot.child("Latitude").getValue().toString());
 
-                            map.addMapObject(new MapMarker(new GeoCoordinate(longitude, latitude, 10)));
+                            map.addMapObject(new MapMarker(new GeoCoordinate(latitude, longitude, 10)));
 
                             Log.d("MainActivity", "Value is: " + longitude);
+                            Log.d("MainActivity", "Value is: " + latitude);
                         }
 
                         @Override
