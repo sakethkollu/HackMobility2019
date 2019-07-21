@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public FloatingActionButton goToDirections;
     public FloatingActionButton toggleHeatmap;
     private GeoCoordinate currentMarker;
-    private RelativeLayout mainLayout;
+
     FloatingActionButton resetData;
     FloatingActionButton creatNewParking;
     EditText searchDestination;
@@ -146,6 +146,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             @Override
             public void onClick(View view) {
                 //this is where you can create a new parking strucutre
+                //Check if near others
+                Coordinate rightNow = Coordinate(currentMarker);
+                if (parkingCoordinates.nearest(rightNow.getLatitude(), rightNow.getLongitude()).withinRadius(rightNow, 3)){
+                    // get to nearest and park there
+                }
+                else{
+                    
+                    HashMap<String, Object> t = new HashMap<String, Object>();
+                    t.put("Current Capacity", pl.getCurrentCapacity());
+                    t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
+                    t.put("Number of Ratings", pl.getNumRatings());
+                    t.put("Rating", pl.getRating());
+                }
+                //Create new parking structure
+                //Add to firebase
             }
         });
 
