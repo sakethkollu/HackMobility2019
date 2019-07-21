@@ -18,7 +18,7 @@ public class ParkingLot extends ParkingLocation {
         this.currentCapacity = currentCapacity;
     }
 
-    public ParkingLot(Coordinate location, double rating, int num_ratings, long maxCapacity, long currentCapacity) {
+    public ParkingLot(Coordinate location, double rating, long num_ratings, long maxCapacity, long currentCapacity) {
         super(location, rating, num_ratings);
         this.location = this.getLocation();
         this.maxCapacity = maxCapacity;

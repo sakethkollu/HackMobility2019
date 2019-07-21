@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
     public static HeatmapOverlay heatMap;
     public static KDTree parkingCoordinates;
+    public static final int RADIUS = 1000;
 
     boolean click = true;
     private PopupWindow currentWindow;
@@ -156,7 +157,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         creatNewParking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //this is where you can create a new parking strucutre
+                Coordinate currentLocation = new Coordinate(currentLatitude, currentLongitude);
+
+                ParkingLot pl = new ParkingLot(currentLocation, 1, 0);
+                pl.setNumRatings(0);
+                pl.setRating(0);
+                HashMap<String, Object> t = new HashMap<String, Object>();
+
+                t.put("Current Capacity", pl.getCurrentCapacity());
+                t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
+                t.put("Number of Ratings", pl.getNumRatings());
+                t.put("Rating", pl.getRating());
+
+                db.collection("Ratings").document(pl.getLocation().toString()).update(t);
+
+
+                dataMapGlobal.put(currentLocation, pl);
             }
         });
 
@@ -257,20 +273,29 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
-                                Image my_location = new Image();
-                                my_location.setImageResource(R.drawable.my_loc);
-                                MapMarker customMarker = new MapMarker(new GeoCoordinate(current.getLatitude(), current.getLongitude(),0.0),my_location);
-                                map.addMapObject(customMarker);
+
+                                Coordinate nearest = parkingCoordinates.nearest(current);
 
                                 Image park_location = new Image();
                                 park_location.setImageResource(R.drawable.my_park_loc);
 
                                 for(Coordinate c : dataMapGlobal.keySet()) {
-                                    if(current.withinRadius(c, 1000)){
+                                    if(current.withinRadius(c, RADIUS) && !c.equals(nearest)){
                                         map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 0.0), park_location));
                                     }
 
                                 }
+
+
+                                Image nearest_loc = new Image();
+                                nearest_loc.setImageResource(R.drawable.my_park_selected);
+                                MapMarker nearestMarker = new MapMarker(new GeoCoordinate(nearest.getLatitude(), nearest.getLongitude(),0.0),nearest_loc);
+                                map.addMapObject(nearestMarker);
+
+                                Image my_location = new Image();
+                                my_location.setImageResource(R.drawable.my_loc);
+                                MapMarker customMarker = new MapMarker(new GeoCoordinate(current.getLatitude(), current.getLongitude(),0.0),my_location);
+                                map.addMapObject(customMarker);
                             }catch(Exception e){
 
                             }
@@ -296,7 +321,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                         currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
+
                                                         goToDirections.show();
+
                                                         currentLocation.setVisibility(View.GONE);
                                                         resetData.setVisibility(View.INVISIBLE);
                                                         creatNewParking.setVisibility(View.INVISIBLE);

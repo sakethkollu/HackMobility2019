@@ -9,13 +9,13 @@ import java.util.List;
 public class ParkingLocation {
     private Coordinate location;
     private double rating = -1;
-    private int num_ratings = 0;
+    private long num_ratings = 0;
 
     public ParkingLocation(Coordinate location) {
         this.location = location;
     }
 
-    public ParkingLocation(Coordinate location, double rating, int num_ratings) {
+    public ParkingLocation(Coordinate location, double rating, long num_ratings) {
         this.location = location;
         this.rating = rating;
         this.num_ratings = num_ratings;
@@ -46,7 +46,7 @@ public class ParkingLocation {
         return this.rating;
     }
 
-    public int getNumRatings() {
+    public long getNumRatings() {
         return this.num_ratings;
     }
 

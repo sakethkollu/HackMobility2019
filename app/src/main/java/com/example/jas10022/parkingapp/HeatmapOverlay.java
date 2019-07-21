@@ -17,7 +17,7 @@ public class HeatmapOverlay {
         MapCircle circle;
         for (Coordinate c : MainActivity.dataMapGlobal.keySet()){
             // Check an area a bit larger than selected locations
-            if (current.withinRadius(c, 1500)) {
+            if (current.withinRadius(c, MainActivity.RADIUS * 1.5)) {
                 circle = MainActivity.dataMapGlobal.get(c).heatmapLocation();
                 this.saved.add(circle);
                 MainActivity.map.addMapObject(circle);

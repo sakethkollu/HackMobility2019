@@ -98,6 +98,13 @@ public class KDTree {
         return best;
     }
 
+    public Coordinate nearest(Coordinate c) {
+        Coordinate goalCoordinate = c;
+        Coordinate best = nearestHelper(CoordinateTree, goalCoordinate, CoordinateTree).Coordinate;
+        this.depth = 0;
+        return best;
+    }
+
     /**
      * @param n    Parent node to start at
      * @param goal goal Coordinate we are trying to find

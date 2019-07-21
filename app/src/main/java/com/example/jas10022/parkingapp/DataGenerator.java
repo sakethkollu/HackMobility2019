@@ -27,7 +27,7 @@ public class DataGenerator {
             Coordinate location;
             long currentCapacity;
             long maxCapacity;
-            int numberOfRatings;
+            long numberOfRatings;
             boolean occupied;
             double rating;
 
@@ -37,17 +37,7 @@ public class DataGenerator {
 
 
             rating = (double) document.get("Rating");
-            try{
-                numberOfRatings = (int) document.get("Number Of Ratings");
-            }catch (Exception e) {
-                numberOfRatings = 0;
-            }
-
-            try{
-
-            }catch (Exception e) {
-                rating = 0;
-            }
+            numberOfRatings = (long) document.get("Number of Ratings");
             occupied = (boolean) document.get("Occupied");
 
             if(maxCapacity == -1) {
