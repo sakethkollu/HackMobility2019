@@ -47,10 +47,10 @@ public class ParkingSpot extends ParkingLocation {
         GeoCoordinate coord = new GeoCoordinate(lat, lng);
         MapCircle position = new MapCircle(100, coord);
         if (occupied) {
-            position.setFillColor(0x55ff0000);
+            position.setFillColor(0x55ff0000); //If occupied, make red
         }
         else{
-            position.setFillColor(0x5500ff00);
+            position.setFillColor(0x5500ff00); //ELSE MAKE GREEN
         }
         return position;
     }

@@ -51,10 +51,10 @@ public class ParkingLot extends ParkingLocation {
         double lng = this.location.getLongitude();
         GeoCoordinate coord = new GeoCoordinate(lat, lng);
         MapCircle position = new MapCircle(150, coord);
-        int alpha = 0xff / 3;
-        int red = (int) (0xff * (1.0 - this.occupency()));
-        int green = (int) (0xff * this.occupency());
-        int colour = alpha * 0x1000000 + red * 0x10000 + green*0x100;
+        int alpha = 0xff / 3; //Three circles on top of one another makes full
+        int red = (int) (0xff * (1.0 - this.occupency())); //red ratio is equal to percentage full
+        int green = (int) (0xff * this.occupency()); //green ratio is equal to percent empty
+        int colour = alpha * 0x1000000 + red * 0x10000 + green*0x100; //convert to ARGB bullshit for colour
 
 
         position.setFillColor(colour);
