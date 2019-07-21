@@ -50,13 +50,14 @@ public class ParkingLot extends ParkingLocation {
         double lat = this.location.getLatitude();
         double lng = this.location.getLongitude();
         GeoCoordinate coord = new GeoCoordinate(lat, lng);
-        MapCircle position = new MapCircle(100, coord);
+        MapCircle position = new MapCircle(150, coord);
         int alpha = 0xff / 3;
         int red = (int) (0xff * (1.0 - this.occupency()));
         int green = (int) (0xff * this.occupency());
-        int colour = alpha * 0x1;
+        int colour = alpha * 0x1000000 + red * 0x10000 + green*0x100;
 
-        position.setFillColor(0xff0000ff);
+
+        position.setFillColor(colour);
         return position;
     }
 

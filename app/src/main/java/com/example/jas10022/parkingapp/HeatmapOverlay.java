@@ -10,7 +10,6 @@ public class HeatmapOverlay {
     private void addCircles(Map map){
         Coordinate current =  new Coordinate(MainActivity.currentLatitude, MainActivity.currentLongitude);
         for (Coordinate c : MainActivity.dataMapGlobal.keySet()){
-            System.out.println(current.withinRadius(c, 1500));
             if (current.withinRadius(c, 1500)) {
                 map.addMapObject(MainActivity.dataMapGlobal.get(c).heatmapLocation());
             }
