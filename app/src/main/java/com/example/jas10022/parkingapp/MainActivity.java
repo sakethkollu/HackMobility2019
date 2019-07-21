@@ -28,12 +28,16 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
+import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
+import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.SupportMapFragment;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
 
@@ -59,8 +63,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapfragment);
         // initialize the Map Fragment and
         // retrieve the map that is associated to the fragment
-        PreInitialization pre = new PreInitialization();
-        t = PreInitialization.gps;
 
         //jas
 
@@ -89,199 +91,113 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
-                    List<String> schemes = map.getMapSchemes();
-                    map.setMapScheme(schemes.get(2));
 
-                    for(GeoPoint g : t){
-                        map.addMapObject(new MapMarker(new GeoCoordinate(g.getLatitude(), g.getLongitude(), 10)));
-                    }
 
-                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
-                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 4);
-
-                    //create a geoCordinate based off the long and latitude
-                    //this is how you cna create a new Map Marker in a specified location
-                    //map.addMapObject(new MapMarker(new GeoCoordinate(49.163, -123.137766, 10)));
-
-                    //This is how to get from the realt time database
-
-//                    myRef.child("0").addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            // This method is called once with the initial value and again
-//                            // whenever data at this location is updated.
-//                            Double longitude = Double.parseDouble(dataSnapshot.child("Longitude").getValue().toString());
-//                            Double latitude =  Double.parseDouble(dataSnapshot.child("Latitude").getValue().toString());
-//
-//                            map.addMapObject(new MapMarker(new GeoCoordinate(latitude, longitude, 10)));
-//
-//                            Log.d("MainActivity", "Value is: " + longitude);
-//                            Log.d("MainActivity", "Value is: " + latitude);
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError error) {
-//                            // Failed to read value
-//                            Log.w("MainActivity", "Failed to read value.", error.toException());
-//                        }
-//                    });
-//
-//                    //jas's code- this is how you get it from the firestore database
-//                    db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                            for (DocumentSnapshot document: queryDocumentSnapshots.getDocuments()){
-//
-//                                System.out.println(document.getId() + "=>" + document.getData());
-//                                double Ratings = (double)document.get("Rating");
-//                                int numOfRatings = (int)document.get("Number of Ratings");
-//                                GeoPoint location = (GeoPoint) document.get("Location");
-//                                Coordinate loc = new Coordinate(location.getLatitude(),location.getLongitude());
-//                                ParkingLocation parkingLocation = new ParkingLocation(loc, Ratings,numOfRatings);
-//
-//
-//                                //this is where you want to populate the local hash map
-//
-//                            }
-//                        }
-//                    });
-                    myRef.child("0").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // This method is called once with the initial value and again
-                            // whenever data at this location is updated.
-                            Double longitude = Double.parseDouble(dataSnapshot.child("Longitude").getValue().toString());
-                            Double latitude =  Double.parseDouble(dataSnapshot.child("Latitude").getValue().toString());
-
-                            map.addMapObject(new MapMarker(new GeoCoordinate(latitude, longitude, 10)));
-
-                            Log.d("MainActivity", "Value is: " + longitude);
-                            Log.d("MainActivity", "Value is: " + latitude);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Failed to read value
-                            Log.w("MainActivity", "Failed to read value.", error.toException());
-                        }
-                    });
-
-                    //jas's code- this is how you get it from the firestore database
-                    /*
+                    //this part of the code is accessing the database and pulling all the parking garanges around the user
                     db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (DocumentSnapshot document: queryDocumentSnapshots.getDocuments()){
+                            //this is accessing each parking garage document
+                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
 
-                                System.out.println(document.getId() + "=>" + document.getData());
-                                double Ratings = (double)document.get("Rating");
-                                int numOfRatings = (int)document.get("Number of Ratings");
-                                GeoPoint location = (GeoPoint) document.get("Location");
-                                Coordinate loc = new Coordinate(location.getLatitude(),location.getLongitude());
-                                ParkingLocation parkingLocation = new ParkingLocation(loc, Ratings,numOfRatings);
+                                try {
+                                    //System.out.println(document.getId() + "=>" + document.getData());
+                                    GeoPoint location = (GeoPoint) document.get("Location");
 
-                                //this is where you want to populate the local hash map
+                                    Double rating = (double) document.get("Rating");
+                                    Integer numOfRatings = (int) document.get("Number of Ratings");
+
+
+                                    long maxSpots = Long.parseLong((String) document.get("Max Capacity"));
+                                    int current_capacity = (int) document.get("Current Capacity");
+
+                                    boolean occupied = (boolean) document.get("Occupied");
+
+                                    Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
+
+                                    if (maxSpots == -1) {
+                                        map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
+                                    } else {
+                                        map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
+                                    }
+
+                                } catch (NullPointerException n) {
+
+
+                                    try {
+                                        GeoPoint location = (GeoPoint) document.get("Location");
+                                        long maxSpots = Long.parseLong((String) document.get("Max Capacity"));
+
+                                        long current_capacity = (long) document.get("Current Capacity");
+                                        boolean occupied = (boolean) document.get("Occupied");
+
+                                        Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
+                                        if (maxSpots == -1) {
+                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
+                                        } else {
+                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
+                                        }
+
+                                    } catch (Exception e) {
+                                        GeoPoint location = (GeoPoint) document.get("Location");
+                                        long maxSpots = -1;
+
+                                        Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
+                                        if (maxSpots == -1) {
+                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
+                                        } else {
+                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
+                                        }
+
+                                        System.out.println("added a point: " + loc);
+                                    }
+
+
+                                }
+
 
                             }
-                        }
-                    });*/
 
+                            MapGesture.OnGestureListener listener =
+                                    new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
+                                        @Override
+                                        public boolean onMapObjectsSelected(List<ViewObject> objects) {
+                                            for (ViewObject viewObj : objects) {
+                                                if (viewObj.getBaseType() == ViewObject.Type.USER_OBJECT) {
+                                                    if (((MapObject) viewObj).getType() == MapObject.Type.MARKER) {
 
-                    /*
-                    myRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (int i = 0; i < dataSnapshot.getChildrenCount(); i++){
+                                                        GeoCoordinate selectedPoint = ((MapMarker) viewObj).getCoordinate();
 
+                                                        System.out.println("Selected location is:  " + selectedPoint.getLatitude() + " : " + selectedPoint.getLongitude());
 
-                                DataSnapshot currentdocumnet = dataSnapshot.child(Integer.toString(i));
-                                String parkingSpots = currentdocumnet.child("NumberOfSigns").getValue().toString();
-                                String longitude = currentdocumnet.child("Longitude").getValue().toString();
-                                String latitude =  currentdocumnet.child("Latitude").getValue().toString();
-
-                                HashMap<String, Object> t = new HashMap<String, Object>();
-
-                                t.put("Occupied", false);
-                                t.put("Max Capacity", parkingSpots);
-                                t.put("Current Capacity", 0);
-
-                                db.collection("Ratings").document(latitude + ", " + longitude).update(t);
-
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });*/
-
-
-                    /* This is how you can retrive a value
-                    myRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // This method is called once with the initial value and again
-                            // whenever data at this location is updated.
-                            String value = dataSnapshot.getValue(String.class);
-                            Log.d("MainActivity", "Value is: " + value);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Failed to read value
-                            Log.w("MainActivity", "Failed to read value.", error.toException());
-                        }
-                    });*/
-
-                    /* This is how you can set the value of a specific doc in the realtime database
-                    mDatabase.child("users").child(userId).setValue(user)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Write was successful!
-                            // ...
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Write failed
-                            // ...
+                                                    }
+                                                }
+                                            }
+                                            return false;
+                                        }
+                                    };
                         }
                     });
 
-                     */
 
-                    /* This is how you retrieve data from the firestore database
-                    db.collection("users")
-                    .add(user)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document", e);
-                        }
-                    });
-                     */
+                    List<String> schemes = map.getMapSchemes();
+                    map.setMapScheme(schemes.get(2));
 
+                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
+                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
 
-
-                    // ...
-
-
+                    //create a geoCordinate based off the long and latitude
+                    //this is how you cna create a new Map Marker in a specified location
+                    //map.addMapObject(new MapMarker(new GeoCoordinate(49.163, -123.137766, 10)));u
 
                 } else {
                     System.out.println("ERROR: Cannot initialize SupportMapFragment: " + error);
                 }
             }
+
         });
     }
+
 
     @Override
     public void onLocationChanged(Location location) {
