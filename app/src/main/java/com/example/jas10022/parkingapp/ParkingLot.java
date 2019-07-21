@@ -3,7 +3,6 @@ package com.example.jas10022.parkingapp;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.mapping.MapCircle;
 
-import java.util.Set;
 
 public class ParkingLot extends ParkingLocation {
 

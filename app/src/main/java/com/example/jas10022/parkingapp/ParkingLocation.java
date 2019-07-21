@@ -1,10 +1,8 @@
 package com.example.jas10022.parkingapp;
 
-import android.graphics.Color;
 
 import com.here.android.mpa.mapping.MapCircle;
 import com.here.android.mpa.common.GeoCoordinate;
-import java.util.List;
 
 public class ParkingLocation {
     private Coordinate location;

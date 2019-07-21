@@ -8,9 +8,7 @@ import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -32,18 +30,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -52,28 +43,19 @@ import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.MapCircle;
 import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.SupportMapFragment;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
 
     //This is the refrence of the Firebase Stoarage
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    LocationManager locationManager;
-    LocationListener locationListener;
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static Map map;
     public static double currentLatitude;
@@ -99,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
     ImageButton resetData;
     ImageButton creatNewParking;
-    private RelativeLayout mainLayout;
     EditText searchDestination;
 
     @Override
@@ -125,8 +106,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         goToDirections.hide();
 
         toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
-
-        //mainLayout.setBackground(getResources().getDrawable(R.drawable.background));
 
         if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
 
