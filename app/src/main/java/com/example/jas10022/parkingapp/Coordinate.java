@@ -1,6 +1,7 @@
 package com.example.jas10022.parkingapp;
 
 import com.google.firebase.firestore.GeoPoint;
+import com.here.android.mpa.common.GeoCoordinate;
 
 public class Coordinate {
     private double latitude;
@@ -8,6 +9,10 @@ public class Coordinate {
 
     public Coordinate (GeoPoint geoPoint) {
         this(geoPoint.getLatitude(), geoPoint.getLongitude());
+    }
+
+    public Coordinate (GeoCoordinate geoCoor) {
+        this(geoCoor.getLatitude(), geoCoor.getLongitude());
     }
 
     public Coordinate (double latitude, double longitude) {
