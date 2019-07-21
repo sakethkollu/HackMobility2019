@@ -25,6 +25,10 @@ public class Coordinate {
         this.longitude = longitude;
     }
 
+    public static double L2Norm(Coordinate a, Coordinate b) {
+        return Math.sqrt(Math.pow((a.getLongitude() - b.getLongitude()), 2)  + Math.pow((a.getLatitude() - b.getLatitude()), 2));
+    }
+
     @Override
     public boolean equals(Object obj) {
         Coordinate other = (Coordinate) obj;

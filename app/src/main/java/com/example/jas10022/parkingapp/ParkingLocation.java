@@ -39,4 +39,10 @@ public class ParkingLocation {
     public int getNumRatings() {
         return this.num_ratings;
     }
+
+
+    @Override
+    public String toString() {
+        return "Parking Location @ " + this.location.toString() + " Rating: " + this.rating + " x " + this.num_ratings;
+    }
 }

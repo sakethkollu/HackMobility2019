@@ -81,46 +81,46 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     //map.addMapObject(new MapMarker(new GeoCoordinate(49.163, -123.137766, 10)));
 
                     //This is how to get from the realt time database
-                    myRef.child("0").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // This method is called once with the initial value and again
-                            // whenever data at this location is updated.
-                            Double longitude = Double.parseDouble(dataSnapshot.child("Longitude").getValue().toString());
-                            Double latitude =  Double.parseDouble(dataSnapshot.child("Latitude").getValue().toString());
-
-                            map.addMapObject(new MapMarker(new GeoCoordinate(latitude, longitude, 10)));
-
-                            Log.d("MainActivity", "Value is: " + longitude);
-                            Log.d("MainActivity", "Value is: " + latitude);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Failed to read value
-                            Log.w("MainActivity", "Failed to read value.", error.toException());
-                        }
-                    });
-
-                    //jas's code- this is how you get it from the firestore database
-                    db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (DocumentSnapshot document: queryDocumentSnapshots.getDocuments()){
-
-                                System.out.println(document.getId() + "=>" + document.getData());
-                                double Ratings = (double)document.get("Rating");
-                                int numOfRatings = (int)document.get("Number of Ratings");
-                                GeoPoint location = (GeoPoint) document.get("Location");
-                                Coordinate loc = new Coordinate(location.getLatitude(),location.getLongitude());
-                                ParkingLocation parkingLocation = new ParkingLocation(loc, Ratings,numOfRatings);
-
-
-                                //this is where you want to populate the local hash map
-
-                            }
-                        }
-                    });
+//                    myRef.child("0").addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            // This method is called once with the initial value and again
+//                            // whenever data at this location is updated.
+//                            Double longitude = Double.parseDouble(dataSnapshot.child("Longitude").getValue().toString());
+//                            Double latitude =  Double.parseDouble(dataSnapshot.child("Latitude").getValue().toString());
+//
+//                            map.addMapObject(new MapMarker(new GeoCoordinate(latitude, longitude, 10)));
+//
+//                            Log.d("MainActivity", "Value is: " + longitude);
+//                            Log.d("MainActivity", "Value is: " + latitude);
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError error) {
+//                            // Failed to read value
+//                            Log.w("MainActivity", "Failed to read value.", error.toException());
+//                        }
+//                    });
+//
+//                    //jas's code- this is how you get it from the firestore database
+//                    db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                        @Override
+//                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                            for (DocumentSnapshot document: queryDocumentSnapshots.getDocuments()){
+//
+//                                System.out.println(document.getId() + "=>" + document.getData());
+//                                double Ratings = (double)document.get("Rating");
+//                                int numOfRatings = (int)document.get("Number of Ratings");
+//                                GeoPoint location = (GeoPoint) document.get("Location");
+//                                Coordinate loc = new Coordinate(location.getLatitude(),location.getLongitude());
+//                                ParkingLocation parkingLocation = new ParkingLocation(loc, Ratings,numOfRatings);
+//
+//
+//                                //this is where you want to populate the local hash map
+//
+//                            }
+//                        }
+//                    });
 
 
 
@@ -180,6 +180,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
 
                     // ...
+
+                PreInitialization pre = new PreInitialization();
+
                 } else {
                     System.out.println("ERROR: Cannot initialize SupportMapFragment: " + error);
                 }
