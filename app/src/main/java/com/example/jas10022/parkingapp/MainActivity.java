@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     LocationListener locationListener;
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static Map map;
-    double currentLatitude;
-    double currentLongitude;
+    public static double currentLatitude;
+    public double currentLongitude;
     private FusedLocationProviderClient fusedLocationClient;
     SupportMapFragment mapFragment;
     int width;
@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 @Override
                                 public boolean onTapEvent(PointF p) {
                                     ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
-                                    if(click) {
                                         for (ViewObject viewObject : viewObjectList) {
                                             if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                 MapObject mapObject = (MapObject) viewObject;
@@ -171,17 +170,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
                                                             click = false;
+                                                        }else {
+                                                            currentWindow.dismiss();
+                                                            click = true;
+                                                            currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
+
                                                         }
                                                         System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
                                                     }
                                                 }
                                             }
                                         }
-                                    }else{
-                                        currentWindow.dismiss();
-                                        click = true;
-                                    }
                                     return false;
+
                                 }
 
                                 @Override
