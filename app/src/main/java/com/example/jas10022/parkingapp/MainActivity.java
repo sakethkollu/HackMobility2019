@@ -142,16 +142,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             }catch(Exception e){
 
                             }
-
-
-                            MapGesture.OnGestureListener listener =
-                                    new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
-                                        @Override
-                                        public boolean onMapObjectsSelected(List<ViewObject> objects) {
-                                            for (ViewObject viewObj : objects) {
-                                                if (viewObj.getBaseType() == ViewObject.Type.USER_OBJECT) {
-                                                    if (((MapObject) viewObj).getType() == MapObject.Type.MARKER) {
-
                             mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
                                 @Override
                                 public boolean onTapEvent(PointF p) {
