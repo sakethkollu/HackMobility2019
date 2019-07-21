@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            //HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
+                            HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
