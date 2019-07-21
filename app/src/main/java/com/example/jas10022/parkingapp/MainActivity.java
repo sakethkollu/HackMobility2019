@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static Map map;
     public static double currentLatitude;
-    public double currentLongitude;
+    public static double currentLongitude;
     private FusedLocationProviderClient fusedLocationClient;
     SupportMapFragment mapFragment;
     int width;
