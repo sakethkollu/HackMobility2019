@@ -522,12 +522,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 }
             }
             HashMap<String, Object> t = new HashMap<String, Object>();
-            t.put("Current Capacity", pl.getCurrentCapacity());
+
+            int max = b.nextInt(7) + 1;
+            t.put("Max Capacity", (long) max);
+
+            t.put("Current Capacity", b.nextInt(max));
             t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
             t.put("Number of Ratings", pl.getNumRatings());
             t.put("Rating", pl.getRating());
             t.put("Occupied",false);
-            t.put("Max Capacity", 1);
+
 
             db.collection("Ratings").document(pl.getLocation().toString()).update(t);
             System.out.print("finished");
