@@ -22,6 +22,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
@@ -82,8 +83,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     boolean click = true;
     private PopupWindow currentWindow;
     public static KDTree parkingCoordinates;
-    public FloatingActionButton currentLocation;
+    public ImageButton currentLocation;
     public FloatingActionButton goToDirections;
+    public FloatingActionButton toggleHeatmap;
     private GeoCoordinate currentMarker;
     private RelativeLayout mainLayout;
 
@@ -102,9 +104,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         height = size.y;
         // initialize the Map Fragment and
         // retrieve the map that is associated to the fragment
-        currentLocation = findViewById(R.id.curent_location);
+        currentLocation = findViewById(R.id.current_location);
         goToDirections = findViewById(R.id.go_button);
         goToDirections.hide();
+
+        toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
+
         //mainLayout.setBackground(getResources().getDrawable(R.drawable.background));
 
         if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
@@ -114,6 +119,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        toggleHeatmap.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                heatMap.toggle();
+            }
+        });
 
         currentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -222,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
                                                         goToDirections.show();
-                                                        currentLocation.hide();
+                                                        currentLocation.setVisibility(View.GONE);
                                                             click = false;
 
                                                         System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
@@ -234,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                         currentWindow.dismiss();
                                         click = true;
                                         goToDirections.hide();
-                                        currentLocation.show();
+                                        currentLocation.setVisibility(View.VISIBLE);
                                     }
                                     return false;
 
