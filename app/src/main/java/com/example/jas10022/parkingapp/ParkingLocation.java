@@ -29,7 +29,7 @@ public class ParkingLocation {
         if (this.num_ratings == 0 || this.rating == -1) {
             this.rating = rating;
         } else {
-            this.rating  = (this.rating * num_ratings + rating) / (num_ratings + 1);
+            this.rating  = (this.rating * num_ratings + rating) / num_ratings;
         }
         this.num_ratings +=1;
     }
