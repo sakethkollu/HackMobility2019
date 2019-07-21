@@ -4,6 +4,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -11,13 +12,14 @@ public class DataGenerator {
 
     private HashMap<Coordinate, ParkingLocation> dataMap;
     private QuerySnapshot queryDocumentSnapshots;
+    private KDTree parkingCoordinates;
 
     public DataGenerator(QuerySnapshot queryDocumentSnapshots) {
         this.queryDocumentSnapshots = queryDocumentSnapshots;
-        generateDataMap();
+        generateData();
     }
 
-    private void generateDataMap() {
+    private void generateData() {
 
         HashMap<Coordinate, ParkingLocation> dm = new HashMap<>();
 
@@ -54,10 +56,16 @@ public class DataGenerator {
         }
 
         this.dataMap = dm;
+        this.parkingCoordinates = new KDTree(new ArrayList<>(this.dataMap.keySet()));
+
     }
 
     public HashMap<Coordinate, ParkingLocation> getDataMap() {
         return this.dataMap;
+    }
+
+    public KDTree getParkingCoordinates() {
+        return this.parkingCoordinates;
     }
 
 }

@@ -25,6 +25,17 @@ public class ParkingLot extends ParkingLocation {
         this.currentCapacity = currentCapacity;
     }
 
+    public long getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public void incrementCapactiy() {
+        this.currentCapacity++;
+    }
+
+    public void decrementCapacity(){
+        this.currentCapacity--;
+    }
     public double occupency(){
         if (maxCapacity == 0 || currentCapacity == maxCapacity){
             return 1.0;

@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
     boolean click = true;
     private PopupWindow currentWindow;
+    public static KDTree parkingCoordinates;
 
 
     @Override
@@ -121,10 +124,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             //this is accessing each parking garage document
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
-                            for(Coordinate c : dataMapGlobal.keySet()) {
-                                map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 5)));
-                            }
+                            parkingCoordinates = dg.getParkingCoordinates();
+                            Coordinate current = new Coordinate(37.78761, -122.39663);
 
+
+                            try{
+                                Image image = new Image();
+                                image.setImageResource(R.drawable.target);
+                                MapMarker customMarker = new MapMarker(new GeoCoordinate(current.getLatitude(), current.getLongitude(),0.0),image);
+                                map.addMapObject(customMarker);
+                                for(Coordinate c : dataMapGlobal.keySet()) {
+                                    if(current.withinRadius(c, 1000)){
+                                        map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 0.0)));
+                                    }
+
+                                }
+                            }catch(Exception e){
+
+                            }
                             mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
                                 @Override
                                 public boolean onTapEvent(PointF p) {
@@ -258,10 +275,47 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                         ParkingLocation parkedLocation = dataMapGlobal.get(clicked);
                         parkedLocation.addRating(rating);
                         HashMap<String,Object> t = new HashMap<String, Object>();
-                        t.put("Rating",rating);
+                        t.put("Rating",parkedLocation.getRating());
+                        t.put("Number of Ratings",parkedLocation.getNumRatings());
                         db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+
+                        ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                        if (pl.getClass() == ParkingSpot.class){
+                            //1 car only so set the occupied to true
+                            ((ParkingSpot)pl).parkInSpot();
+                            HashMap<String,Object> a = new HashMap<String, Object>();
+                            t.put("Occupied",false);
+                            db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                        }else if(pl.getClass() == ParkingLot.class){
+                            //increment the current cars by 1
+                            ((ParkingLot)pl).decrementCapacity();
+                            HashMap<String,Object> a = new HashMap<String, Object>();
+                            t.put("Current Capacity",((ParkingLot)pl).getCurrentCapacity());
+                            db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                        }
+
+                        parkedButton.setVisibility(View.VISIBLE);
+                        ratingBar.setEnabled(false);
+                        ratingBar.setNumStars(5);
+                        ratingBar.setRating((float) pl.getRating());
+
                     }
                 });
+
+                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                if (pl.getClass() == ParkingSpot.class){
+                    //1 car only so set the occupied to true
+                    ((ParkingSpot)pl).parkInSpot();
+                    HashMap<String,Object> t = new HashMap<String, Object>();
+                    t.put("Occupied",true);
+                    db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                }else if(pl.getClass() == ParkingLot.class){
+                    //increment the current cars by 1
+                    ((ParkingLot)pl).incrementCapactiy();
+                    HashMap<String,Object> t = new HashMap<String, Object>();
+                    t.put("Current Capacity",((ParkingLot)pl).getCurrentCapacity());
+                    db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                }
 
             }
         });
