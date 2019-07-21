@@ -29,12 +29,14 @@ public class DataGenerator {
             long maxCapacity;
             int numberOfRatings;
             boolean occupied;
-            int rating;
+            double rating;
 
             location = new Coordinate((GeoPoint) document.get("Location"));
             currentCapacity = (long) document.get("Current Capacity");
             maxCapacity = Long.parseLong((String) document.get("Max Capacity"));
 
+
+            rating = (double) document.get("Rating");
             try{
                 numberOfRatings = (int) document.get("Number Of Ratings");
             }catch (Exception e) {
@@ -42,7 +44,7 @@ public class DataGenerator {
             }
 
             try{
-                rating = (int) document.get("Rating");
+
             }catch (Exception e) {
                 rating = 0;
             }
