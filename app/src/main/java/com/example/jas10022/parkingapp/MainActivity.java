@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     int height;
 
     public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
+    public static HeatmapOverlay heatMap;
     boolean click = true;
     private PopupWindow currentWindow;
     public static KDTree parkingCoordinates;
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
-                    List<String> schemes = map.getMapSchemes();
+                    List<String> schemes = map.getMapSchemes(); //Make map no traffic
                     map.setMapScheme(schemes.get(4));
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
+                            heatMap = new HeatmapOverlay();
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
@@ -170,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 public boolean onTapEvent(PointF p) {
                                     ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
                                     if(click) {
+                                        // heatMap.clearHeatmap(); Clear Heatmap example
                                         for (ViewObject viewObject : viewObjectList) {
                                             if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                 MapObject mapObject = (MapObject) viewObject;
