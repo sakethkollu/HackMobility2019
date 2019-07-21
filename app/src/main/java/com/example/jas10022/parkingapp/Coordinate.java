@@ -1,13 +1,20 @@
 package com.example.jas10022.parkingapp;
 
+import com.google.firebase.firestore.GeoPoint;
+
 public class Coordinate {
     private double latitude;
     private double longitude;
+
+    public Coordinate (GeoPoint geoPoint) {
+        this(geoPoint.getLatitude(), geoPoint.getLongitude());
+    }
 
     public Coordinate (double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
 
     public double getLatitude() {
         return latitude;
