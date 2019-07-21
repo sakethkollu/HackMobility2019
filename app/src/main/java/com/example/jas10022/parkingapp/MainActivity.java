@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 }
                 else {
                     onlyOne.end();
+
                     onlyOne = new Directions(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
                 }
             }
