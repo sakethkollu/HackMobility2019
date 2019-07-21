@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
     boolean click = true;
     private PopupWindow currentWindow;
+    public static KDTree parkingCoordinates;
 
 
     @Override
@@ -121,9 +124,33 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             //this is accessing each parking garage document
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
-                            for(Coordinate c : dataMapGlobal.keySet()) {
-                                map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 5)));
+                            parkingCoordinates = dg.getParkingCoordinates();
+                            Coordinate current = new Coordinate(37.78761, -122.39663);
+
+
+                            try{
+                                Image image = new Image();
+                                image.setImageResource(R.drawable.target);
+                                MapMarker customMarker = new MapMarker(new GeoCoordinate(current.getLatitude(), current.getLongitude(),0.0),image);
+                                map.addMapObject(customMarker);
+                                for(Coordinate c : dataMapGlobal.keySet()) {
+                                    if(current.withinRadius(c, 1000)){
+                                        map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 0.0)));
+                                    }
+
+                                }
+                            }catch(Exception e){
+
                             }
+
+
+                            MapGesture.OnGestureListener listener =
+                                    new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
+                                        @Override
+                                        public boolean onMapObjectsSelected(List<ViewObject> objects) {
+                                            for (ViewObject viewObj : objects) {
+                                                if (viewObj.getBaseType() == ViewObject.Type.USER_OBJECT) {
+                                                    if (((MapObject) viewObj).getType() == MapObject.Type.MARKER) {
 
                             mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
                                 @Override
