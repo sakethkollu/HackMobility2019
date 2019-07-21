@@ -15,8 +15,8 @@ import java.util.List;
 public class Directions {
 
 
-    double currentlat = MainActivity.currentLatitude;
-    double currentlon = MainActivity.currentLatitude;
+    private double currentlat = MainActivity.currentLatitude;
+    private double currentlon = MainActivity.currentLongitude;
 
     public Directions(GeoCoordinate endpoint){
         this(new Coordinate(endpoint));
