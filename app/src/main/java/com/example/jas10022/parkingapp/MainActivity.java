@@ -1,9 +1,11 @@
 package com.example.jas10022.parkingapp;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 
@@ -23,27 +25,38 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
+import com.here.android.mpa.mapping.MapCircle;
 import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.SupportMapFragment;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
 
@@ -88,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         // retrieve the map that is associated to the fragment
         currentLocation = findViewById(R.id.curent_location);
         goToDirections = findViewById(R.id.go_button);
+        goToDirections.hide();
+
 
         currentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,16 +141,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             public void onEngineInitializationCompleted(
                     OnEngineInitListener.Error error) {
 
-                currentLatitude = 37.78761;
-                currentLongitude = -122.39663;
+
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
                     List<String> schemes = map.getMapSchemes(); //Make map no traffic
                     map.setMapScheme(schemes.get(4));
 
-                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
-                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
+                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.LINEAR);
+                    map.setZoomLevel(0);
+
 
                     //this part of the code is accessing the database and pulling all the parking garanges around the user
                     db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -187,6 +202,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                         currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
+                                                        goToDirections.show();
+                                                        currentLocation.hide();
                                                             click = false;
 
                                                         System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
@@ -197,6 +214,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                     }else{
                                         currentWindow.dismiss();
                                         click = true;
+                                        goToDirections.hide();
+                                        currentLocation.show();
                                     }
                                     return false;
 
@@ -209,6 +228,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             });
                         }
                     });
+
+
+
 
                     //create a geoCordinate based off the long and latitude
                     //this is how you cna create a new Map Marker in a specified location
@@ -272,10 +294,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         final RatingBar ratingBar = eventPopUp.getContentView().findViewById(R.id.ratingBar);
         final Button parkedButton = eventPopUp.getContentView().findViewById(R.id.Parked_Button);
         final Button ratingButton = eventPopUp.getContentView().findViewById(R.id.rating_button);
+        final TextView reviewNum = eventPopUp.getContentView().findViewById(R.id.TextRatingNumber);
+        final TextView reviewScore = eventPopUp.getContentView().findViewById(R.id.ratingNumber);
 
         ratingBar.setNumStars(5);
         ratingBar.setRating(rating);
         ratingBar.setEnabled(false);
+        ParkingLocation pl = dataMapGlobal.get(new Coordinate(location));
+        reviewNum.setText("Number of Ratings: " + pl.getNumRatings());
+        reviewScore.setText("Review Score: " + pl.getRating());
+
+        System.out.println("number of reviews: " + pl.getNumRatings());
+        System.out.println("rating value: " + pl.getRating());
 
         parkedButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -284,6 +314,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
                 parkedButton.setVisibility(View.INVISIBLE);
                 ratingButton.setVisibility(View.VISIBLE);
+                reviewNum.setVisibility(View.INVISIBLE);
+                reviewScore.setVisibility(View.INVISIBLE);
                 ratingBar.setNumStars(5);
                 ratingBar.setRating(0);
                 ratingBar.setEnabled(true);
@@ -293,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     public void onClick(View view) {
 
                         int rating = Math.round(ratingBar.getRating());
+
 
                         Coordinate clicked = new Coordinate(location.getLatitude(), location.getLongitude());
                         ParkingLocation parkedLocation = dataMapGlobal.get(clicked);
@@ -317,8 +350,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
                         }
 
+                        reviewNum.setText("Number of Ratings: " + pl.getNumRatings());
+                        reviewScore.setText("Review Score: " + pl.getRating());
+
                         parkedButton.setVisibility(View.VISIBLE);
                         ratingButton.setVisibility(View.INVISIBLE);
+                        reviewNum.setVisibility(View.VISIBLE);
+                        reviewScore.setVisibility(View.VISIBLE);
                         ratingBar.setEnabled(false);
                         ratingBar.setNumStars(5);
                         ratingBar.setRating((float) pl.getRating());
@@ -341,11 +379,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
                 }
 
+
             }
         });
 
 
         return eventPopUp;
 
+    }
+
+    public void randomizeData(){
+        Random b = new Random();
+        for(Coordinate c : dataMapGlobal.keySet()) {
+            ParkingLot pl = (ParkingLot) dataMapGlobal.get(c);
+            pl.setNumRatings(b.nextInt(100));
+            pl.setRating(b.nextInt(5));
+            for (int i = 0; i < 5; i++) {
+                if(b.nextBoolean()){
+                    pl.incrementCapactiy();
+                }
+            }
+            HashMap<String, Object> t = new HashMap<String, Object>();
+            t.put("Current Capacity", pl.getCurrentCapacity());
+            t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
+            t.put("Number of Ratings", pl.getNumRatings());
+            t.put("Rating", pl.getRating());
+
+
+            db.collection("Ratings").document(pl.getLocation().toString()).update(t);
+
+        }
     }
 }
