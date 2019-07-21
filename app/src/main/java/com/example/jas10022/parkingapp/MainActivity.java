@@ -161,6 +161,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
 
                 dataMapGlobal.put(currentLocation, pl);
+
+                //This is how to refresh the page
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
             }
         });
 
@@ -243,12 +248,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
-                    List<String> schemes = map.getMapSchemes(); //Make map no traffic
-                    map.setMapScheme(schemes.get(4));
+                    //List<String> schemes = map.getMapSchemes(); //Make map no traffic
+
+                    map.setMapScheme(Map.Scheme.NORMAL_DAY_GREY);
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.LINEAR);
-                    map.setZoomLevel(0);
-
+                    map.setZoomLevel(1.0);
+                    System.out.println("Zoom level is: " + map.getZoomLevel());
 
 
                     //this part of the code is accessing the database and pulling all the parking garanges around the user
@@ -328,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                     }else{
                                         currentWindow.dismiss();
                                         click = true;
-                                        goToDirections.setVisibility(View.VISIBLE);
+                                        goToDirections.setVisibility(View.INVISIBLE);
                                         creatNewParking.setVisibility(View.VISIBLE);
                                         resetData.setVisibility(View.VISIBLE);
                                         currentLocation.setVisibility(View.VISIBLE);
@@ -540,7 +546,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         if(!click){
             currentWindow.dismiss();
             click = true;
-            goToDirections.setVisibility(View.VISIBLE);
+            goToDirections.setVisibility(View.INVISIBLE);
             creatNewParking.setVisibility(View.VISIBLE);
             resetData.setVisibility(View.VISIBLE);
             currentLocation.setVisibility(View.VISIBLE);
