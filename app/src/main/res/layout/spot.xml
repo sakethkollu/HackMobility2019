@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
+
     <LinearLayout
-        android:gravity="center"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <RatingBar
-        android:id="@+id/ratingBar"
-        android:layout_width="249dp"
-        android:layout_height="64dp"
-        android:layout_marginBottom="16dp"
-        />
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="193dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <Button
             android:id="@+id/Parked_Button"
-            android:layout_width="250dp"
-            android:layout_height="76dp"
+            android:layout_width="195dp"
+            android:layout_height="66dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:text="Parked"
             android:gravity="center"
-            android:visibility="visible"
-            />
+            android:text="Parked"
+            android:visibility="visible" />
+
         <Button
             android:id="@+id/rating_button"
-            android:layout_width="250dp"
-            android:layout_height="76dp"
+            android:layout_width="197dp"
+            android:layout_height="65dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:text="Leave Spot"
             android:gravity="center"
-            android:visibility="invisible"/>
+            android:text="Leave Spot"
+            android:visibility="invisible" />
+        </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>
 
