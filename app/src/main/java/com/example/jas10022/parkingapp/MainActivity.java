@@ -148,33 +148,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             public void onClick(View view) {
                 //this is where you can create a new parking strucutre
                 //Check if near others
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
                 Coordinate rightNow = new Coordinate(currentMarker);
                 if (!parkingCoordinates.nearest(rightNow.getLatitude(), rightNow.getLongitude()).withinRadius(rightNow, 3)){
 
                     ParkingLot pl = new ParkingLot(rightNow, 1, 1);
-=======
-=======
->>>>>>> parent of 795a0d5... adding to FB
-=======
->>>>>>> parent of 795a0d5... adding to FB
+
                 Coordinate rightNow = Coordinate(currentMarker);
                 if (parkingCoordinates.nearest(rightNow.getLatitude(), rightNow.getLongitude()).withinRadius(rightNow, 3)){
                     // get to nearest and park there
                 }
                 else{
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> master
 
-=======
-                    
->>>>>>> parent of 795a0d5... adding to FB
-=======
-                    
->>>>>>> parent of 795a0d5... adding to FB
+
                     HashMap<String, Object> t = new HashMap<String, Object>();
                     t.put("Current Capacity", pl.getCurrentCapacity());
                     t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
