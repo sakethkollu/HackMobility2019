@@ -33,6 +33,7 @@ import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.SupportMapFragment;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
 
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
+                    List<String> schemes = map.getMapSchemes();
+                    map.setMapScheme(schemes.get(2));
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
                     map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 4);
