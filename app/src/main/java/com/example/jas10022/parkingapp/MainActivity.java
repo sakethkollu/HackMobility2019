@@ -83,10 +83,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
     public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
     public static HeatmapOverlay heatMap;
-    public static KDTree parkingCoordinates;
-
     boolean click = true;
     private PopupWindow currentWindow;
+    public static KDTree parkingCoordinates;
     public ImageButton currentLocation;
     public FloatingActionButton goToDirections;
     public ImageButton toggleHeatmap;
@@ -150,25 +149,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 //this is where you can create a new parking strucutre
                 //Check if near others
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Coordinate rightNow = new Coordinate(currentMarker);
                 if (!parkingCoordinates.nearest(rightNow.getLatitude(), rightNow.getLongitude()).withinRadius(rightNow, 3)){
 
                     ParkingLot pl = new ParkingLot(rightNow, 1, 1);
 =======
+=======
+>>>>>>> parent of 795a0d5... adding to FB
                 Coordinate rightNow = Coordinate(currentMarker);
                 if (parkingCoordinates.nearest(rightNow.getLatitude(), rightNow.getLongitude()).withinRadius(rightNow, 3)){
                     // get to nearest and park there
                 }
                 else{
+<<<<<<< HEAD
 >>>>>>> master
 
+=======
+                    
+>>>>>>> parent of 795a0d5... adding to FB
                     HashMap<String, Object> t = new HashMap<String, Object>();
                     t.put("Current Capacity", pl.getCurrentCapacity());
                     t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
                     t.put("Number of Ratings", pl.getNumRatings());
                     t.put("Rating", pl.getRating());
-                    db.collection("Ratings").document(pl.getLocation().toString()).update(t);
-                    System.out.println("Made new parking spot");
                 }
                 //Create new parking structure
                 //Add to firebase

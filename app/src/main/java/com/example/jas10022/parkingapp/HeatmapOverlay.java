@@ -46,10 +46,8 @@ public class HeatmapOverlay {
     public void toggle(){
         if (this.on){
             this.clearHeatmap();
-            this.on = false;
         }
         else{
-            this.on = true;
             this.addCircles();
         }
     }
