@@ -54,7 +54,12 @@ public class ParkingLot extends ParkingLocation {
 
     private double getRadius(){
         double area = this.getArea();
-        return Math.sqrt(area);
+        if (area > 0) {
+            return Math.sqrt(area);
+        }
+        else{
+            return 50;
+        }
     }
 
     @Override

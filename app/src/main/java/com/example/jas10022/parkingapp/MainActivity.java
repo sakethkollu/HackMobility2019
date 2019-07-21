@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static KDTree parkingCoordinates;
     public FloatingActionButton currentLocation;
     public FloatingActionButton goToDirections;
+    public FloatingActionButton toggleHeatmap;
     private GeoCoordinate currentMarker;
 
 
@@ -103,7 +104,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         currentLocation = findViewById(R.id.curent_location);
         goToDirections = findViewById(R.id.go_button);
         goToDirections.hide();
+        toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
 
+        toggleHeatmap.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                heatMap.toggle();
+            }
+        });
 
         currentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
