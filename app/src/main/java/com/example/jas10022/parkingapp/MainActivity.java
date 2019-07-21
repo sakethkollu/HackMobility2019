@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     double currentLongitude;
     private FusedLocationProviderClient fusedLocationClient;
 
-    HashSet<GeoPoint> t = new HashSet<GeoPoint>();
+    public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,72 +92,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     // now the map is ready to be used
                     map = mapFragment.getMap();
 
-
                     //this part of the code is accessing the database and pulling all the parking garanges around the user
                     db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                             //this is accessing each parking garage document
-                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-
-                                try {
-                                    //System.out.println(document.getId() + "=>" + document.getData());
-                                    GeoPoint location = (GeoPoint) document.get("Location");
-
-                                    Double rating = (double) document.get("Rating");
-                                    Integer numOfRatings = (int) document.get("Number of Ratings");
-
-
-                                    long maxSpots = Long.parseLong((String) document.get("Max Capacity"));
-                                    int current_capacity = (int) document.get("Current Capacity");
-
-                                    boolean occupied = (boolean) document.get("Occupied");
-
-                                    Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
-
-                                    if (maxSpots == -1) {
-                                        map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
-                                    } else {
-                                        map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
-                                    }
-
-                                } catch (NullPointerException n) {
-
-
-                                    try {
-                                        GeoPoint location = (GeoPoint) document.get("Location");
-                                        long maxSpots = Long.parseLong((String) document.get("Max Capacity"));
-
-                                        long current_capacity = (long) document.get("Current Capacity");
-                                        boolean occupied = (boolean) document.get("Occupied");
-
-                                        Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
-                                        if (maxSpots == -1) {
-                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
-                                        } else {
-                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
-                                        }
-
-                                    } catch (Exception e) {
-                                        GeoPoint location = (GeoPoint) document.get("Location");
-                                        long maxSpots = -1;
-
-                                        Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
-                                        if (maxSpots == -1) {
-                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
-                                        } else {
-                                            map.addMapObject(new MapMarker(new GeoCoordinate(loc.getLatitude(), loc.getLongitude(), 10)));
-                                        }
-
-                                        System.out.println("added a point: " + loc);
-                                    }
-
-
-                                }
-
-
+                            DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
+                            dataMapGlobal = dg.getDataMap();
+                            for(Coordinate c : dataMapGlobal.keySet()) {
+                                map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 5)));
                             }
-
                             MapGesture.OnGestureListener listener =
                                     new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
                                         @Override
