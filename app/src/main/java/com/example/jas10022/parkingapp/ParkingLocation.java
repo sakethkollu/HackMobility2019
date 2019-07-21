@@ -54,7 +54,7 @@ public class ParkingLocation {
         double lat = this.location.getLatitude();
         double lng = this.location.getLongitude();
         GeoCoordinate coord = new GeoCoordinate(lat, lng);
-        MapCircle position = new MapCircle(150, coord);
+        MapCircle position = new MapCircle(50, coord);
         position.setFillColor(0x55ff0000); //IF NO DATA, MAKE RED
         return position;
     }

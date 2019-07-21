@@ -78,11 +78,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     int height;
 
     public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
+    public static HeatmapOverlay heatMap;
     boolean click = true;
     private PopupWindow currentWindow;
     public static KDTree parkingCoordinates;
     public FloatingActionButton currentLocation;
     public FloatingActionButton goToDirections;
+    private GeoCoordinate currentMarker;
     private RelativeLayout mainLayout;
 
 
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         goToDirections.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                new Directions(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
             }
         });
 
@@ -162,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
-                    List<String> schemes = map.getMapSchemes();
+                    List<String> schemes = map.getMapSchemes(); //Make map no traffic
                     map.setMapScheme(schemes.get(4));
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.LINEAR);
@@ -177,9 +179,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
-
-                            //HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
+                            heatMap = new HeatmapOverlay(map);
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
@@ -205,13 +205,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 public boolean onTapEvent(PointF p) {
                                     ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
                                     if(click) {
+                                        // heatMap.clearHeatmap(); Clear Heatmap example
                                         for (ViewObject viewObject : viewObjectList) {
                                             if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                 MapObject mapObject = (MapObject) viewObject;
                                                 if (mapObject.getType() == MapObject.Type.MARKER) {
 
                                                     MapMarker selectedMarker = ((MapMarker) mapObject);
-                                                    GeoCoordinate currentMarker = selectedMarker.getCoordinate();
+                                                    currentMarker = selectedMarker.getCoordinate();
                                                     map.setCenter(currentMarker, Map.Animation.LINEAR);
                                                     map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
                                                     ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
