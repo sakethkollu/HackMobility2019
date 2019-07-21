@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -163,7 +165,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 heatMap.toggle();
 
                 if(!heatMap.on){
-                    toggleHeatmap.setImageDrawable(getResources().getDrawable(R.drawable.my_fire));
+                    Drawable t = new ScaleDrawable(getResources().getDrawable(R.drawable.my_fire), 0, 20, 20).getDrawable();
+
+                    toggleHeatmap.setImageDrawable(t);
                 }else{
                     toggleHeatmap.setImageDrawable(getResources().getDrawable(R.drawable.ic_ice_blue));
                 }
@@ -254,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 park_location.setImageResource(R.drawable.my_park_loc);
 
                                 for(Coordinate c : dataMapGlobal.keySet()) {
-                                    if(current.withinRadius(c, 1000)){
+                                    if(current.withinRadius(c, 100000)){
                                         map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 0.0), park_location));
                                     }
 
@@ -288,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                         currentLocation.setVisibility(View.GONE);
                                                         resetData.setVisibility(View.INVISIBLE);
                                                         creatNewParking.setVisibility(View.INVISIBLE);
+                                                        searchDestination.setInputType(InputType.TYPE_NULL);
                                                             click = false;
 
                                                         System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
