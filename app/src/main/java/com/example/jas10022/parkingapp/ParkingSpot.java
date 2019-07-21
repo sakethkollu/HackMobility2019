@@ -2,10 +2,11 @@ package com.example.jas10022.parkingapp;
 
 public class ParkingSpot extends ParkingLocation {
 
-    private boolean occupied = false;
+    private boolean occupied;
 
-    public ParkingSpot(Coordinate location, int rating, int num_ratings) {
+    public ParkingSpot(Coordinate location, double rating, int num_ratings, boolean occupied) {
         super(location, rating, num_ratings);
+        this.occupied = occupied;
     }
 
     public void parkInSpot() {
