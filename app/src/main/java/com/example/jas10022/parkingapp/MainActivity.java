@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static KDTree parkingCoordinates;
     public ImageButton currentLocation;
     public FloatingActionButton goToDirections;
+    public FloatingActionButton toggleHeatmap;
     private GeoCoordinate currentMarker;
     private RelativeLayout mainLayout;
 
@@ -106,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         currentLocation = findViewById(R.id.current_location);
         goToDirections = findViewById(R.id.go_button);
         goToDirections.hide();
+
+        toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
+
         //mainLayout.setBackground(getResources().getDrawable(R.drawable.background));
 
         if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
@@ -115,6 +119,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        toggleHeatmap.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                heatMap.toggle();
+            }
+        });
 
         currentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
