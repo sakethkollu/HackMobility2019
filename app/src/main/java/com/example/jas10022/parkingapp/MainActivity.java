@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public FloatingActionButton goToDirections;
     public FloatingActionButton toggleHeatmap;
     private GeoCoordinate currentMarker;
-
+    private RelativeLayout mainLayout;
     FloatingActionButton resetData;
     FloatingActionButton creatNewParking;
     EditText searchDestination;
