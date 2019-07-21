@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (int i = 0; i < dataSnapshot.getChildrenCount(); i++){
->>>>>>> Stashed changes
+
 
                                 DataSnapshot currentdocumnet = dataSnapshot.child(Integer.toString(i));
                                 String parkingSpots = currentdocumnet.child("NumberOfSigns").getValue().toString();
