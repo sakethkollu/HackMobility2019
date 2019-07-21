@@ -161,11 +161,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
 
                 dataMapGlobal.put(currentLocation, pl);
-
-                //This is how to refresh the page
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
             }
         });
 
