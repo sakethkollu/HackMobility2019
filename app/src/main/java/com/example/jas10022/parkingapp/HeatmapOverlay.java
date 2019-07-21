@@ -16,7 +16,7 @@ public class HeatmapOverlay {
     public boolean on;
 
     public HeatmapOverlay(){
-        saved = new HashSet<>();
+        this.saved = new HashSet<>();
         this.addCircles();
     }
 
@@ -38,8 +38,8 @@ public class HeatmapOverlay {
     private void clearHeatmap(){
         this.on = false;
         MainActivity.map.removeMapObjects(new ArrayList<MapObject>(this.saved));
-        for (MapObject circle: saved){
-            saved.remove(circle);
+        for (MapObject circle: this.saved){
+            this.saved.remove(circle);
         }
     }
 
