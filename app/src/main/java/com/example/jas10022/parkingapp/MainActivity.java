@@ -258,10 +258,47 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                         ParkingLocation parkedLocation = dataMapGlobal.get(clicked);
                         parkedLocation.addRating(rating);
                         HashMap<String,Object> t = new HashMap<String, Object>();
-                        t.put("Rating",rating);
+                        t.put("Rating",parkedLocation.getRating());
+                        t.put("Number of Ratings",parkedLocation.getNumRatings());
                         db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+
+                        ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                        if (pl.getClass() == ParkingSpot.class){
+                            //1 car only so set the occupied to true
+                            ((ParkingSpot)pl).parkInSpot();
+                            HashMap<String,Object> a = new HashMap<String, Object>();
+                            t.put("Occupied",false);
+                            db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                        }else if(pl.getClass() == ParkingLot.class){
+                            //increment the current cars by 1
+                            ((ParkingLot)pl).decrementCapacity();
+                            HashMap<String,Object> a = new HashMap<String, Object>();
+                            t.put("Current Capacity",((ParkingLot)pl).getCurrentCapacity());
+                            db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                        }
+
+                        parkedButton.setVisibility(View.VISIBLE);
+                        ratingBar.setEnabled(false);
+                        ratingBar.setNumStars(5);
+                        ratingBar.setRating((float) pl.getRating());
+
                     }
                 });
+
+                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                if (pl.getClass() == ParkingSpot.class){
+                    //1 car only so set the occupied to true
+                    ((ParkingSpot)pl).parkInSpot();
+                    HashMap<String,Object> t = new HashMap<String, Object>();
+                    t.put("Occupied",true);
+                    db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                }else if(pl.getClass() == ParkingLot.class){
+                    //increment the current cars by 1
+                    ((ParkingLot)pl).incrementCapactiy();
+                    HashMap<String,Object> t = new HashMap<String, Object>();
+                    t.put("Current Capacity",((ParkingLot)pl).getCurrentCapacity());
+                    db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                }
 
             }
         });

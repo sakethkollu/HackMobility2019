@@ -22,6 +22,17 @@ public class ParkingLot extends ParkingLocation {
         this.currentCapacity = currentCapacity;
     }
 
+    public long getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public void incrementCapactiy() {
+        this.currentCapacity++;
+    }
+
+    public void decrementCapacity(){
+        this.currentCapacity--;
+    }
     @Override
     public int hashCode() {
         return this.getLocation().hashCode();
