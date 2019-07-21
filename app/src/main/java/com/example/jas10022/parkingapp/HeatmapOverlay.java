@@ -22,7 +22,8 @@ public class HeatmapOverlay {
 
     private void addCircles(){
         this.on = true;
-        Coordinate current =  new Coordinate(MainActivity.currentLatitude, MainActivity.currentLongitude);
+        //Coordinate current =  new Coordinate(MainActivity.currentLatitude, MainActivity.currentLongitude);
+        Coordinate current = new Coordinate(37.7876, -122.3966); //Hardcode for debugging
         MapCircle circle;
         for (Coordinate c : MainActivity.dataMapGlobal.keySet()){
             // Check an area a bit larger than selected locations
@@ -38,9 +39,7 @@ public class HeatmapOverlay {
     private void clearHeatmap(){
         this.on = false;
         MainActivity.map.removeMapObjects(new ArrayList<MapObject>(this.saved));
-        for (MapObject circle: this.saved){
-            this.saved.remove(circle);
-        }
+        this.saved.clear();
     }
 
     public void toggle(){

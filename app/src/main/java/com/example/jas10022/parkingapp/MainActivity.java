@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 public boolean onTapEvent(PointF p) {
                                     ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
                                     if(click) {
-                                        // heatMap.clearHeatmap(); Clear Heatmap example
+
                                         for (ViewObject viewObject : viewObjectList) {
                                             if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                 MapObject mapObject = (MapObject) viewObject;
