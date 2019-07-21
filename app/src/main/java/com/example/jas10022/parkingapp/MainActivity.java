@@ -150,11 +150,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 //Check if near others
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Coordinate rightNow = new Coordinate(currentMarker);
                 if (!parkingCoordinates.nearest(rightNow.getLatitude(), rightNow.getLongitude()).withinRadius(rightNow, 3)){
 
                     ParkingLot pl = new ParkingLot(rightNow, 1, 1);
 =======
+=======
+>>>>>>> parent of 795a0d5... adding to FB
 =======
 >>>>>>> parent of 795a0d5... adding to FB
                 Coordinate rightNow = Coordinate(currentMarker);
@@ -163,8 +166,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 }
                 else{
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> master
 
+=======
+                    
+>>>>>>> parent of 795a0d5... adding to FB
 =======
                     
 >>>>>>> parent of 795a0d5... adding to FB
