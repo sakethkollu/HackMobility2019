@@ -17,6 +17,7 @@ public class Directions {
 
     private double currentlat = MainActivity.currentLatitude;
     private double currentlon = MainActivity.currentLongitude;
+    private RouteManager rm;
 
     public Directions(GeoCoordinate endpoint){
         this(new Coordinate(endpoint));
@@ -27,7 +28,7 @@ public class Directions {
     }
 
     public Directions (double lat, double lng){
-        RouteManager rm = new RouteManager();
+        rm = new RouteManager();
         RoutePlan routePlan = new RoutePlan();
         routePlan.addWaypoint(new GeoCoordinate(currentlat, currentlon));
         routePlan.addWaypoint(new GeoCoordinate(lat, lng));
@@ -42,6 +43,10 @@ public class Directions {
         rm.calculateRoute(routePlan, new RouteListener());
 
 
+    }
+
+    public void end(){
+        rm.cancel();
     }
 
     private class RouteListener implements RouteManager.Listener {

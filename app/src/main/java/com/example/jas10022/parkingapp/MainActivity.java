@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public FloatingActionButton goToDirections;
     public ImageButton toggleHeatmap;
     private GeoCoordinate currentMarker;
+    private Directions onlyOne;
 
     ImageButton resetData;
     ImageButton creatNewParking;
@@ -201,8 +202,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
         goToDirections.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                new Directions(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
+            public void onClick(View view) {//applesauce
+                if (onlyOne == null){
+                    onlyOne = new Directions(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
+                }
+                else {
+                    onlyOne.end();
+                    onlyOne = new Directions(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
+                }
             }
         });
 
