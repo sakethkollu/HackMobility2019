@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                 if (mapObject.getType() == MapObject.Type.MARKER) {
                                                     MapMarker selectedMarker = ((MapMarker) mapObject);
                                                     GeoCoordinate currentMarker = selectedMarker.getCoordinate();
-                                                    ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
+                                                    ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
                                                     currentWindow = newMarkerEventPopUp((int)Math.round(pl.getRating()), currentMarker);
 
                                                     if (click) {
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                         t.put("Number of Ratings",parkedLocation.getNumRatings());
                         db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
 
-                        ParkingLocation pl = dataMapGlobal.get(clicked);
+                        ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
                         if (pl.getClass() == ParkingSpot.class){
                             //1 car only so set the occupied to true
                             ((ParkingSpot)pl).parkInSpot();
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     }
                 });
 
-                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location));
+                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
                 if (pl.getClass() == ParkingSpot.class){
                     //1 car only so set the occupied to true
                     ((ParkingSpot)pl).parkInSpot();
