@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            heatMap = new HeatmapOverlay(map);
+                            heatMap = new HeatmapOverlay();
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
