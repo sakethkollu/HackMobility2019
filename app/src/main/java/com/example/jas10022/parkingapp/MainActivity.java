@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 
 
@@ -22,6 +23,7 @@ import android.location.LocationListener;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -139,6 +141,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     creatNewParking.setVisibility(View.VISIBLE);
                     resetData.setVisibility(View.VISIBLE);
                     currentLocation.setVisibility(View.VISIBLE);
+                    searchDestination.setInputType(InputType.TYPE_CLASS_TEXT);
+                    searchDestination.requestFocus();
+                    InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    mgr.showSoftInput(searchDestination, InputMethodManager.SHOW_FORCED);
                 }
             }
         });
@@ -271,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                     map.setCenter(currentMarker, Map.Animation.LINEAR);
                                                     map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
                                                     ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
+
 
                                                     if (pl != null) {
                                                         currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
