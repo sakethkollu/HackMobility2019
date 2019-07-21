@@ -1,5 +1,8 @@
 package com.example.jas10022.parkingapp;
 
+import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.mapping.MapCircle;
+
 import java.util.Set;
 
 public class ParkingLot extends ParkingLocation {
@@ -21,6 +24,34 @@ public class ParkingLot extends ParkingLocation {
         this.maxCapacity = maxCapacity;
         this.currentCapacity = currentCapacity;
     }
+
+    public double occupency(){
+        if (maxCapacity == 0 || currentCapacity == maxCapacity){
+            return 1.0;
+        }
+        else{
+            return 1.0 - Double.valueOf(currentCapacity) /maxCapacity;
+        }
+    }
+
+    @Override
+    public MapCircle heatmapLocation(){
+        double lat = this.location.getLatitude();
+        double lng = this.location.getLongitude();
+        GeoCoordinate coord = new GeoCoordinate(lat, lng);
+        MapCircle position = new MapCircle(100, coord);
+        int alpha = 0xff / 3;
+        int red = (int) (0xff * (1.0 - this.occupency()));
+        int green = (int) (0xff * this.occupency());
+        int colour = alpha * 0x1;
+
+        position.setFillColor(0xff0000ff);
+        return position;
+    }
+
+
+
+
 
     @Override
     public int hashCode() {

@@ -1,5 +1,11 @@
 package com.example.jas10022.parkingapp;
 
+import android.graphics.Color;
+
+import com.here.android.mpa.mapping.MapCircle;
+import com.here.android.mpa.common.GeoCoordinate;
+import java.util.List;
+
 public class ParkingLocation {
     private Coordinate location;
     private double rating = -1;
@@ -43,6 +49,17 @@ public class ParkingLocation {
     public int getNumRatings() {
         return this.num_ratings;
     }
+
+    public MapCircle heatmapLocation(){
+        double lat = this.location.getLatitude();
+        double lng = this.location.getLongitude();
+        GeoCoordinate coord = new GeoCoordinate(lat, lng);
+        MapCircle position = new MapCircle(100, coord);
+        position.setFillColor(0xff0000ff);
+        return position;
+    }
+
+
 
 
     @Override
