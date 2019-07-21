@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 heatMap.toggle();
 
                 if(!heatMap.on){
-                    Drawable t = new ScaleDrawable(getResources().getDrawable(R.drawable.my_fire), 0, 20, 20).getDrawable();
+                    Drawable t = new ScaleDrawable(getResources().getDrawable(R.drawable.my_fire), 0, 10, 10).getDrawable();
 
                     toggleHeatmap.setImageDrawable(t);
                 }else{
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 park_location.setImageResource(R.drawable.my_park_loc);
 
                                 for(Coordinate c : dataMapGlobal.keySet()) {
-                                    if(current.withinRadius(c, 100000)){
+                                    if(current.withinRadius(c, 1000)){
                                         map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 0.0), park_location));
                                     }
 
