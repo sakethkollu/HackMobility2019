@@ -26,18 +26,20 @@ public class HeatmapOverlay {
         MapCircle circle;
         for (Coordinate c : MainActivity.dataMapGlobal.keySet()){
             // Check an area a bit larger than selected locations
-            //if (current.withinRadius(c, 1500)) {
+            if (current.withinRadius(c, 1500)) {
                 circle = MainActivity.dataMapGlobal.get(c).heatmapLocation();
-                saved.add(circle);
 
                 MainActivity.map.addMapObject(circle);
-            //}
+            }
         }
     }
 
     private void clearHeatmap(){
         this.on = false;
         MainActivity.map.removeMapObjects(new ArrayList<MapObject>(this.saved));
+        for (MapObject circle: saved){
+            saved.remove(circle);
+        }
     }
 
     public void toggle(){
