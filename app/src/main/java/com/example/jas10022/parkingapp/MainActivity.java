@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
         //jas
 
-
         if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
 
             ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     map = mapFragment.getMap();
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
-                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
+                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 4);
 
                     //create a geoCordinate based off the long and latitude
                     //this is how you cna create a new Map Marker in a specified location
