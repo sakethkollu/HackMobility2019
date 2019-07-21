@@ -1,11 +1,9 @@
 package com.example.jas10022.parkingapp;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 
@@ -29,21 +27,15 @@ import android.widget.RatingBar;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.MapCircle;
 import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
@@ -51,7 +43,6 @@ import com.here.android.mpa.mapping.SupportMapFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
@@ -140,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     // now the map is ready to be used
                     map = mapFragment.getMap();
                     List<String> schemes = map.getMapSchemes();
-                    map.setMapScheme(schemes.get(2));
+                    map.setMapScheme(schemes.get(4));
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
                     map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
@@ -153,17 +144,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            //HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
+                            HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
-                                Image image = new Image();
-                                image.setImageResource(R.drawable.target);
-                                MapMarker customMarker = new MapMarker(new GeoCoordinate(current.getLatitude(), current.getLongitude(),0.0),image);
+                                Image my_location = new Image();
+                                my_location.setImageResource(R.drawable.my_loc);
+                                MapMarker customMarker = new MapMarker(new GeoCoordinate(current.getLatitude(), current.getLongitude(),0.0),my_location);
                                 map.addMapObject(customMarker);
+
+                                Image park_location = new Image();
+                                park_location.setImageResource(R.drawable.my_park_loc);
+
                                 for(Coordinate c : dataMapGlobal.keySet()) {
                                     if(current.withinRadius(c, 1000)){
-                                        map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 0.0)));
+                                        map.addMapObject(new MapMarker(new GeoCoordinate(c.getLatitude(), c.getLongitude(), 0.0), park_location));
                                     }
 
                                 }

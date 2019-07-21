@@ -45,17 +45,40 @@ public class ParkingLot extends ParkingLocation {
         }
     }
 
+    private double getArea(){
+        if (maxCapacity == 1){
+            return 2500;
+        }
+        return 30000*Math.log(maxCapacity)/Math.log(Math.exp(1));
+    }
+
+    private double getRadius(){
+        double area = this.getArea();
+        return Math.sqrt(area);
+    }
+
     @Override
     public MapCircle heatmapLocation(){
         double lat = this.location.getLatitude();
         double lng = this.location.getLongitude();
         GeoCoordinate coord = new GeoCoordinate(lat, lng);
-        MapCircle position = new MapCircle(150, coord);
-        int alpha = 0xff / 3;
-        int red = (int) (0xff * (1.0 - this.occupency()));
-        int green = (int) (0xff * this.occupency());
-        int colour = alpha * 0x1000000 + red * 0x10000 + green*0x100;
-
+        MapCircle position = new MapCircle(this.getRadius(), coord);
+        //int alpha = 0x60; //Three circles on top of one another makes full
+        int colour;
+        if (this.occupency() >= .66){
+            colour = 0x5500ff00;
+        }
+        else if (this.occupency() >= .34){
+            colour = 0x55ffff00;
+        }
+        else{
+            colour = 0x55ff0000;
+        }
+        /*
+        int red = (int) (0xff * (1.0 - this.occupency())); //red ratio is equal to percentage full
+        int green = (int) (0xff * this.occupency()); //green ratio is equal to percent empty
+        int colour = alpha * 0x1000000 + red * 0x10000 + green*0x100; //convert to ARGB bullshit for colour
+        */
 
         position.setFillColor(colour);
         return position;
