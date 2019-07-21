@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     boolean click = true;
     private PopupWindow currentWindow;
     public ImageButton currentLocation;
-    public FloatingActionButton goToDirections;
+    public ImageButton goToDirections;
     public ImageButton toggleHeatmap;
     private GeoCoordinate currentMarker;
     private Directions onlyOne;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         creatNewParking = findViewById(R.id.add_Parking_structure);
         searchDestination = findViewById(R.id.search_for_destination);
         creatNewParking.setVisibility(View.VISIBLE);
-        goToDirections.hide();
+        goToDirections.setVisibility(View.INVISIBLE);
         searchDestination.setVisibility(View.INVISIBLE);
 
         toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
 
         /*
         searchDestination.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         creatNewParking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Coordinate currentLocation = new Coordinate(currentLatitude, currentLongitude);
 
                 ParkingLot pl = new ParkingLot(currentLocation, 1, 0);
@@ -189,6 +189,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         currentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 if ( ContextCompat.checkSelfPermission( getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
 
                     ActivityCompat.requestPermissions( getParent(), new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
@@ -310,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
 
-                                                        goToDirections.show();
+                                                        goToDirections.setVisibility(View.VISIBLE);
 
                                                         currentLocation.setVisibility(View.GONE);
                                                         resetData.setVisibility(View.INVISIBLE);
@@ -326,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                     }else{
                                         currentWindow.dismiss();
                                         click = true;
-                                        goToDirections.hide();
+                                        goToDirections.setVisibility(View.VISIBLE);
                                         creatNewParking.setVisibility(View.VISIBLE);
                                         resetData.setVisibility(View.VISIBLE);
                                         currentLocation.setVisibility(View.VISIBLE);
@@ -529,6 +531,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             finish();
             startActivity(intent);
 
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(!click){
+            currentWindow.dismiss();
+            click = true;
+            goToDirections.setVisibility(View.VISIBLE);
+            creatNewParking.setVisibility(View.VISIBLE);
+            resetData.setVisibility(View.VISIBLE);
+            currentLocation.setVisibility(View.VISIBLE);
         }
     }
 }
