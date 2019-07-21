@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     LocationListener locationListener;
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static Map map;
-    double currentLatitude;
-    double currentLongitude;
+    public static double currentLatitude;
+    public double currentLongitude;
     private FusedLocationProviderClient fusedLocationClient;
     SupportMapFragment mapFragment;
     int width;
@@ -118,6 +118,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
+                    List<String> schemes = map.getMapSchemes();
+                    map.setMapScheme(schemes.get(2));
+
+                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
+                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
 
                     //this part of the code is accessing the database and pulling all the parking garanges around the user
                     db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -127,9 +132,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            Coordinate current = new Coordinate(37.78761, -122.39663);
                             HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
-
+                            Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
                                 Image image = new Image();
@@ -149,30 +153,36 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 @Override
                                 public boolean onTapEvent(PointF p) {
                                     ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
-                                    if(click) {
                                         for (ViewObject viewObject : viewObjectList) {
                                             if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                 MapObject mapObject = (MapObject) viewObject;
                                                 if (mapObject.getType() == MapObject.Type.MARKER) {
                                                     MapMarker selectedMarker = ((MapMarker) mapObject);
                                                     GeoCoordinate currentMarker = selectedMarker.getCoordinate();
-                                                    ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
-                                                    currentWindow = newMarkerEventPopUp((int)Math.round(pl.getRating()), currentMarker);
+                                                    map.setCenter(currentMarker, Map.Animation.LINEAR);
+                                                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
+                                                    ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
 
-                                                    if (click) {
-                                                        currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width/50, height / 30);
-                                                        //popUp.update(50, 50, 300, 80);
-                                                        click = false;
+                                                    if (pl != null) {
+                                                        currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
+
+                                                        if (click) {
+                                                            currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
+                                                            //popUp.update(50, 50, 300, 80);
+                                                            click = false;
+                                                        }else {
+                                                            currentWindow.dismiss();
+                                                            click = true;
+                                                            currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
+
+                                                        }
+                                                        System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
                                                     }
-                                                    System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
                                                 }
                                             }
                                         }
-                                    }else{
-                                        currentWindow.dismiss();
-                                        click = true;
-                                    }
                                     return false;
+
                                 }
 
                                 @Override
@@ -182,13 +192,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             });
                         }
                     });
-
-
-                    List<String> schemes = map.getMapSchemes();
-                    map.setMapScheme(schemes.get(2));
-
-                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
-                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
 
                     //create a geoCordinate based off the long and latitude
                     //this is how you cna create a new Map Marker in a specified location
@@ -282,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                         t.put("Number of Ratings",parkedLocation.getNumRatings());
                         db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
 
-                        ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                        ParkingLocation pl = dataMapGlobal.get(clicked);
                         if (pl.getClass() == ParkingSpot.class){
                             //1 car only so set the occupied to true
                             ((ParkingSpot)pl).parkInSpot();
@@ -306,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     }
                 });
 
-                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location));
                 if (pl.getClass() == ParkingSpot.class){
                     //1 car only so set the occupied to true
                     ((ParkingSpot)pl).parkInSpot();
