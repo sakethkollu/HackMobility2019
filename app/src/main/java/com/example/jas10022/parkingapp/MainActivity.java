@@ -116,6 +116,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
+                    List<String> schemes = map.getMapSchemes();
+                    map.setMapScheme(schemes.get(2));
+
+                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
+                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
 
                     //this part of the code is accessing the database and pulling all the parking garanges around the user
                     db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            Coordinate current = new Coordinate(37.78761, -122.39663);
+                            Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
 
                             try{
@@ -153,15 +158,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                 if (mapObject.getType() == MapObject.Type.MARKER) {
                                                     MapMarker selectedMarker = ((MapMarker) mapObject);
                                                     GeoCoordinate currentMarker = selectedMarker.getCoordinate();
+                                                    map.setCenter(currentMarker, Map.Animation.LINEAR);
+                                                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
                                                     ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
-                                                    currentWindow = newMarkerEventPopUp((int)Math.round(pl.getRating()), currentMarker);
 
-                                                    if (click) {
-                                                        currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width/50, height / 30);
-                                                        //popUp.update(50, 50, 300, 80);
-                                                        click = false;
+                                                    if (pl != null) {
+                                                        currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
+
+                                                        if (click) {
+                                                            currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
+                                                            //popUp.update(50, 50, 300, 80);
+                                                            click = false;
+                                                        }
+                                                        System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
                                                     }
-                                                    System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
                                                 }
                                             }
                                         }
@@ -179,13 +189,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             });
                         }
                     });
-
-
-                    List<String> schemes = map.getMapSchemes();
-                    map.setMapScheme(schemes.get(2));
-
-                    map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
-                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
 
                     //create a geoCordinate based off the long and latitude
                     //this is how you cna create a new Map Marker in a specified location
