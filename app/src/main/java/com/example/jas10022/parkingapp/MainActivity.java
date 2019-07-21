@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static KDTree parkingCoordinates;
     public FloatingActionButton currentLocation;
     public FloatingActionButton goToDirections;
+    private RelativeLayout mainLayout;
 
 
     @Override
@@ -101,11 +103,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         currentLocation = findViewById(R.id.curent_location);
         goToDirections = findViewById(R.id.go_button);
         goToDirections.hide();
+        //mainLayout.setBackground(getResources().getDrawable(R.drawable.background));
+
+        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+
+            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
         currentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if ( ContextCompat.checkSelfPermission( getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+
+                    ActivityCompat.requestPermissions( getParent(), new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                }
+
+                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        currentLatitude = location.getLatitude();
+                        currentLongitude = location.getLongitude();
+
+                        map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.LINEAR);
+                        map.setZoomLevel(0);
+                    }
+                });
 
             }
         });
@@ -118,14 +144,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         });
 
         //jas
-
-        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
-
-            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
-        }
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
