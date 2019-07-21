@@ -32,31 +32,39 @@ import java.util.HashMap;
 
 public class PreInitialization {
     HashMap<Coordinate, ParkingLocation> map = new HashMap<>();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     public PreInitialization() {
 
-        for (DocumentSnapshot document: queryDocumentSnapshots.getDocuments()){
+        db.collection("Ratings").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot document: queryDocumentSnapshots.getDocuments()){
 
-            System.out.println(document.getId() + "=>" + document.getData());
-            GeoPoint location = (GeoPoint) document.get("Location");
+                    System.out.println(document.getId() + "=>" + document.getData());
+                    GeoPoint location = (GeoPoint) document.get("Location");
 
-            double ratings = (double)document.get("Rating");
-            int numOfRatings = (int)document.get("Number of Ratings");
+                    double ratings = (double)document.get("Rating");
+                    int numOfRatings = (int)document.get("Number of Ratings");
 
 
-            int maxSpots = Integer.parseInt((String) document.get("Max Capacity"));
-            int current_capacity = (int) document.get("Current Capacity");
+                    int maxSpots = Integer.parseInt((String) document.get("Max Capacity"));
+                    int current_capacity = (int) document.get("Current Capacity");
 
-            boolean occupied = (boolean) document.get("Occupied");
+                    boolean occupied = (boolean) document.get("Occupied");
 
-            Coordinate loc = new Coordinate(location.getLatitude(),location.getLongitude());
+                    Coordinate loc = new Coordinate(location.getLatitude(),location.getLongitude());
 
-            if(maxSpots == - 1){
-                map.put(loc, new ParkingSpot(loc, ratings, numOfRatings, occupied));
-            }else{
-                map.put(loc, new ParkingLot(loc, ratings, numOfRatings, maxSpots, current_capacity));
+                    if(maxSpots == - 1){
+                        map.put(loc, new ParkingSpot(loc, ratings, numOfRatings, occupied));
+                    }else{
+                        map.put(loc, new ParkingLot(loc, ratings, numOfRatings, maxSpots, current_capacity));
+                    }
+
+                }
             }
+        });
 
-        }
 
     }
 }
