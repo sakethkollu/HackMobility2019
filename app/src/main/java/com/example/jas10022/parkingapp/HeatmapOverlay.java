@@ -29,6 +29,7 @@ public class HeatmapOverlay {
             if (current.withinRadius(c, 1500)) {
                 circle = MainActivity.dataMapGlobal.get(c).heatmapLocation();
 
+                this.saved.add(circle);
                 MainActivity.map.addMapObject(circle);
             }
         }
