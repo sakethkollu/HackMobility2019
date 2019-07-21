@@ -9,6 +9,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -74,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     boolean click = true;
     private PopupWindow currentWindow;
     public static KDTree parkingCoordinates;
+    public FloatingActionButton currentLocation;
+    public FloatingActionButton goToDirections;
 
 
     @Override
@@ -90,6 +93,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         height = size.y;
         // initialize the Map Fragment and
         // retrieve the map that is associated to the fragment
+        currentLocation = findViewById(R.id.curent_location);
+        goToDirections = findViewById(R.id.go_button);
+
+        currentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        goToDirections.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
         //jas
 
@@ -132,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
-                            HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
+                            //HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
                             try{
@@ -153,10 +172,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 @Override
                                 public boolean onTapEvent(PointF p) {
                                     ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
+                                    if(click) {
                                         for (ViewObject viewObject : viewObjectList) {
                                             if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                 MapObject mapObject = (MapObject) viewObject;
                                                 if (mapObject.getType() == MapObject.Type.MARKER) {
+
                                                     MapMarker selectedMarker = ((MapMarker) mapObject);
                                                     GeoCoordinate currentMarker = selectedMarker.getCoordinate();
                                                     map.setCenter(currentMarker, Map.Animation.LINEAR);
@@ -165,22 +186,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
                                                     if (pl != null) {
                                                         currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
-
-                                                        if (click) {
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
                                                             click = false;
-                                                        }else {
-                                                            currentWindow.dismiss();
-                                                            click = true;
-                                                            currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
 
-                                                        }
                                                         System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
                                                     }
                                                 }
                                             }
                                         }
+                                    }else{
+                                        currentWindow.dismiss();
+                                        click = true;
+                                    }
                                     return false;
 
                                 }
