@@ -2,7 +2,7 @@ package com.example.jas10022.parkingapp;
 
 public class ParkingLocation {
     private Coordinate location;
-    private double rating;
+    private double rating = -1;
     private int num_ratings = 0;
 
     public ParkingLocation(Coordinate location) {
@@ -20,7 +20,7 @@ public class ParkingLocation {
     }
 
     public void addRating(int rating) {
-        if (this.num_ratings == 0) {
+        if (this.num_ratings == 0 || this.rating == -1) {
             this.rating = rating;
         } else {
             this.rating  = (this.rating * num_ratings + rating) / num_ratings;
