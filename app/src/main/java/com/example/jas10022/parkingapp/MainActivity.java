@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static KDTree parkingCoordinates;
     public FloatingActionButton currentLocation;
     public FloatingActionButton goToDirections;
+    private GeoCoordinate currentMarker;
 
 
     @Override
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         goToDirections.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                new Directions(currentMarker);
             }
         });
 
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                 if (mapObject.getType() == MapObject.Type.MARKER) {
 
                                                     MapMarker selectedMarker = ((MapMarker) mapObject);
-                                                    GeoCoordinate currentMarker = selectedMarker.getCoordinate();
+                                                    currentMarker = selectedMarker.getCoordinate();
                                                     map.setCenter(currentMarker, Map.Animation.LINEAR);
                                                     map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
                                                     ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
