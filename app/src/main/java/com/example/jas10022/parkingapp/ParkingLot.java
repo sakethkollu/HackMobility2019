@@ -4,10 +4,16 @@ import java.util.Set;
 
 public class ParkingLot extends ParkingLocation {
 
-    private int maxCapacity;
-    private int currentCapacity;
+    private long maxCapacity;
+    private long currentCapacity;
 
-    public ParkingLot(Coordinate location, double rating, int num_ratings, int maxCapacity, int currentCapacity) {
+    public ParkingLot(Coordinate location, long maxCapacity, long currentCapacity) {
+        super(location);
+        this.maxCapacity = maxCapacity;
+        this.currentCapacity = currentCapacity;
+    }
+
+    public ParkingLot(Coordinate location, double rating, int num_ratings, long maxCapacity, long currentCapacity) {
         super(location, rating, num_ratings);
         this.maxCapacity = maxCapacity;
         this.currentCapacity = currentCapacity;

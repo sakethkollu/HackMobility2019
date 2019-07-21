@@ -29,9 +29,13 @@ import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.SupportMapFragment;
 
 import java.util.HashMap;
+import java.util.HashSet;
+
 
 public class PreInitialization {
-    HashMap<Coordinate, ParkingLocation> map = new HashMap<>();
+    public static HashSet<GeoPoint> gps = new HashSet<GeoPoint>();
+    Map map = MainActivity.map;
+    HashMap<Coordinate, ParkingLocation> mp = new HashMap<>();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public PreInitialization() {
@@ -41,25 +45,62 @@ public class PreInitialization {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (DocumentSnapshot document: queryDocumentSnapshots.getDocuments()){
 
-                    System.out.println(document.getId() + "=>" + document.getData());
-                    GeoPoint location = (GeoPoint) document.get("Location");
+                    try {
+                        //System.out.println(document.getId() + "=>" + document.getData());
+                        GeoPoint location = (GeoPoint) document.get("Location");
 
-                    double ratings = (double)document.get("Rating");
-                    int numOfRatings = (int)document.get("Number of Ratings");
+                        Double rating = (double) document.get("Rating");
+                        Integer numOfRatings = (int) document.get("Number of Ratings");
 
 
-                    int maxSpots = Integer.parseInt((String) document.get("Max Capacity"));
-                    int current_capacity = (int) document.get("Current Capacity");
+                        long maxSpots = Long.parseLong((String) document.get("Max Capacity"));
+                        int current_capacity = (int) document.get("Current Capacity");
 
-                    boolean occupied = (boolean) document.get("Occupied");
+                        boolean occupied = (boolean) document.get("Occupied");
 
-                    Coordinate loc = new Coordinate(location.getLatitude(),location.getLongitude());
+                        Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
 
-                    if(maxSpots == - 1){
-                        map.put(loc, new ParkingSpot(loc, ratings, numOfRatings, occupied));
-                    }else{
-                        map.put(loc, new ParkingLot(loc, ratings, numOfRatings, maxSpots, current_capacity));
+                        if(maxSpots == - 1){
+                            mp.put(loc, new ParkingSpot(loc, rating, numOfRatings, occupied));
+                        }else{
+                            mp.put(loc, new ParkingLot(loc, rating, numOfRatings, maxSpots, current_capacity));
+                        }
+
+                    }catch( NullPointerException n){
+
+
+                        try{
+                            GeoPoint location = (GeoPoint) document.get("Location");
+                            long maxSpots = Long.parseLong((String) document.get("Max Capacity"));
+
+                            long current_capacity = (long) document.get("Current Capacity");
+                            boolean occupied = (boolean) document.get("Occupied");
+
+                            Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
+                            if(maxSpots == -1){
+                                mp.put(loc, new ParkingSpot(loc, false));
+                            }else{
+                                mp.put(loc, new ParkingLot(loc, maxSpots, 0));
+                            }
+
+                        }catch(Exception e) {
+                            GeoPoint location = (GeoPoint) document.get("Location");
+                            long maxSpots = -1;
+
+                            Coordinate loc = new Coordinate(location.getLatitude(), location.getLongitude());
+                            if(maxSpots == -1){
+                                mp.put(loc, new ParkingSpot(loc, false));
+                            }else{
+                                mp.put(loc, new ParkingLot(loc, maxSpots, 0));
+                            }
+
+                            gps.add(location);
+                            System.out.println("added a point: "  + loc);
+                        }
+
+
                     }
+
 
                 }
             }

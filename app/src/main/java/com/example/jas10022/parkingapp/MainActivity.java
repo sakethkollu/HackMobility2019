@@ -33,6 +33,7 @@ import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.SupportMapFragment;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
 
@@ -43,11 +44,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     LocationManager locationManager;
     LocationListener locationListener;
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    Map map;
+    public static Map map;
     double currentLatitude;
     double currentLongitude;
     private FusedLocationProviderClient fusedLocationClient;
 
+    HashSet<GeoPoint> t = new HashSet<GeoPoint>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapfragment);
         // initialize the Map Fragment and
         // retrieve the map that is associated to the fragment
+        PreInitialization pre = new PreInitialization();
+        t = PreInitialization.gps;
 
         //jas
 
@@ -81,9 +85,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             @Override
             public void onEngineInitializationCompleted(
                     OnEngineInitListener.Error error) {
+
+
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
+
+                    for(GeoPoint g : t){
+                        map.addMapObject(new MapMarker(new GeoCoordinate(g.getLatitude(), g.getLongitude(), 10)));
+                    }
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.NONE);
                     map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
@@ -134,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 //                            }
 //                        }
 //                    });
-
                     myRef.child("0").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -264,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
                     // ...
 
-                PreInitialization pre = new PreInitialization();
+
 
                 } else {
                     System.out.println("ERROR: Cannot initialize SupportMapFragment: " + error);

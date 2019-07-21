@@ -4,6 +4,11 @@ public class ParkingSpot extends ParkingLocation {
 
     private boolean occupied;
 
+    public ParkingSpot(Coordinate location, boolean occupied) {
+        super(location);
+        this.occupied = occupied;
+    }
+
     public ParkingSpot(Coordinate location, double rating, int num_ratings, boolean occupied) {
         super(location, rating, num_ratings);
         this.occupied = occupied;
