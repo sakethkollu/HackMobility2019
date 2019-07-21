@@ -13,13 +13,15 @@ import java.util.ListIterator;
 
 public class HeatmapOverlay {
     private HashSet<MapCircle> saved;
+    public boolean on;
 
     public HeatmapOverlay(){
         saved = new HashSet<>();
-        this.addCircles(MainActivity.map);
+        this.addCircles();
     }
 
-    private void addCircles(Map map){
+    private void addCircles(){
+        this.on = true;
         Coordinate current =  new Coordinate(MainActivity.currentLatitude, MainActivity.currentLongitude);
         MapCircle circle;
         for (Coordinate c : MainActivity.dataMapGlobal.keySet()){
@@ -28,12 +30,22 @@ public class HeatmapOverlay {
                 circle = MainActivity.dataMapGlobal.get(c).heatmapLocation();
                 saved.add(circle);
 
-                map.addMapObject(circle);
+                MainActivity.map.addMapObject(circle);
             }
         }
     }
 
-    public void clearHeatmap(){
+    private void clearHeatmap(){
+        this.on = false;
         MainActivity.map.removeMapObjects(new ArrayList<MapObject>(this.saved));
+    }
+
+    public void toggle(){
+        if (this.on){
+            this.clearHeatmap();
+        }
+        else{
+            this.addCircles();
+        }
     }
 }
