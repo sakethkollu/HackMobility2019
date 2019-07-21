@@ -28,6 +28,7 @@
 
         <meta-data android:name="com.here.android.maps.appid" android:value="pY5Of0mdaScnU5Xydhxi"/>
         <meta-data android:name="com.here.android.maps.apptoken" android:value="0-mnXY43v2gVIMtO1c9hBA"/>
+
     </application>
 
 </manifest>

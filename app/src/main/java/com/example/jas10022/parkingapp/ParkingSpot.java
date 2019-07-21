@@ -40,15 +40,18 @@ public class ParkingSpot extends ParkingLocation {
         }
     }
 
+    @Override
     public MapCircle heatmapLocation(){
         double lat = this.location.getLatitude();
         double lng = this.location.getLongitude();
         GeoCoordinate coord = new GeoCoordinate(lat, lng);
-        MapCircle position = new MapCircle(20, coord);
-        System.out.println(position.getFillColor());
-        position.setFillColor(0xff0000ff);
-        System.out.println("setfilled");
-        System.out.println(position.getFillColor());
+        MapCircle position = new MapCircle(50, coord);
+        if (occupied) {
+            position.setFillColor(0x55ff0000); //If occupied, make red
+        }
+        else{
+            position.setFillColor(0x5500ff00); //ELSE MAKE GREEN
+        }
         return position;
     }
 
