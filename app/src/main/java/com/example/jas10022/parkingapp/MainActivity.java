@@ -35,6 +35,11 @@ import android.widget.TextView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
     //This is the refrence of the Firebase Stoarage
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference("message");
     public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static Map map;
     public static double currentLatitude;
@@ -104,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         searchDestination = findViewById(R.id.search_for_destination);
         creatNewParking.setVisibility(View.VISIBLE);
         goToDirections.hide();
+        searchDestination.setVisibility(View.INVISIBLE);
 
         toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
 
@@ -115,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
+        /*
         searchDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -131,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     mgr.showSoftInput(searchDestination, InputMethodManager.SHOW_FORCED);
                 }
             }
-        });
+        });*/
 
         creatNewParking.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             }
         });
 
-
         mapFragment.init(new OnEngineInitListener() {
             @Override
             public void onEngineInitializationCompleted(
@@ -238,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
                     map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.LINEAR);
                     map.setZoomLevel(0);
+
 
 
                     //this part of the code is accessing the database and pulling all the parking garanges around the user
@@ -509,7 +518,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
             t.put("Number of Ratings", pl.getNumRatings());
             t.put("Rating", pl.getRating());
-
+            t.put("Occupied",false);
+            t.put("Max Capacity", 1);
 
             db.collection("Ratings").document(pl.getLocation().toString()).update(t);
             System.out.print("finished");

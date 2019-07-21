@@ -33,7 +33,7 @@ public class DataGenerator {
 
             location = new Coordinate((GeoPoint) document.get("Location"));
             currentCapacity = (long) document.get("Current Capacity");
-            maxCapacity = Long.parseLong((String) document.get("Max Capacity"));
+            maxCapacity = Long.parseLong(document.get("Max Capacity").toString());
 
 
             rating = (double) document.get("Rating");
