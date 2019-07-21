@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 
 
@@ -22,6 +23,7 @@ import android.location.LocationListener;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -88,11 +90,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     private PopupWindow currentWindow;
     public ImageButton currentLocation;
     public FloatingActionButton goToDirections;
-    public FloatingActionButton toggleHeatmap;
+    public ImageButton toggleHeatmap;
     private GeoCoordinate currentMarker;
+
+    ImageButton resetData;
+    ImageButton creatNewParking;
     private RelativeLayout mainLayout;
-    FloatingActionButton resetData;
-    FloatingActionButton creatNewParking;
     EditText searchDestination;
 
     @Override
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         resetData = findViewById(R.id.reset_data);
         creatNewParking = findViewById(R.id.add_Parking_structure);
         searchDestination = findViewById(R.id.search_for_destination);
-        creatNewParking.show();
+        creatNewParking.setVisibility(View.VISIBLE);
         goToDirections.hide();
 
         toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
@@ -136,9 +139,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     currentWindow.dismiss();
                     click = true;
                     goToDirections.hide();
-                    creatNewParking.show();
-                    resetData.show();
+                    creatNewParking.setVisibility(View.VISIBLE);
+                    resetData.setVisibility(View.VISIBLE);
                     currentLocation.setVisibility(View.VISIBLE);
+                    searchDestination.setInputType(InputType.TYPE_CLASS_TEXT);
+                    searchDestination.requestFocus();
+                    InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    mgr.showSoftInput(searchDestination, InputMethodManager.SHOW_FORCED);
                 }
             }
         });
@@ -147,22 +154,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             @Override
             public void onClick(View view) {
                 //this is where you can create a new parking strucutre
-                //Check if near others
-                Coordinate rightNow = new Coordinate(currentMarker);
-                if (!parkingCoordinates.nearest(rightNow.getLatitude(), rightNow.getLongitude()).withinRadius(rightNow, 3)){
-
-                    ParkingLot pl = new ParkingLot(rightNow, 1, 1);
-
-                    HashMap<String, Object> t = new HashMap<String, Object>();
-                    t.put("Current Capacity", pl.getCurrentCapacity());
-                    t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
-                    t.put("Number of Ratings", pl.getNumRatings());
-                    t.put("Rating", pl.getRating());
-                    db.collection("Ratings").document(pl.getLocation().toString()).update(t);
-                    System.out.println("Made new parking spot");
-                }
-                //Create new parking structure
-                //Add to firebase
             }
         });
 
@@ -170,6 +161,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             @Override
             public void onClick(View view){
                 heatMap.toggle();
+
+                if(!heatMap.on){
+                    toggleHeatmap.setImageDrawable(getResources().getDrawable(R.drawable.my_fire));
+                }else{
+                    toggleHeatmap.setImageDrawable(getResources().getDrawable(R.drawable.ic_ice_blue));
+                }
             }
         });
 
@@ -270,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                 public boolean onTapEvent(PointF p) {
                                     ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
                                     if(click) {
-                                        // heatMap.clearHeatmap(); Clear Heatmap example
+
                                         for (ViewObject viewObject : viewObjectList) {
                                             if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                 MapObject mapObject = (MapObject) viewObject;
@@ -282,14 +279,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                     map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()));
                                                     ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
 
+
                                                     if (pl != null) {
                                                         currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
                                                         goToDirections.show();
                                                         currentLocation.setVisibility(View.GONE);
-                                                        resetData.hide();
-                                                        creatNewParking.hide();
+                                                        resetData.setVisibility(View.INVISIBLE);
+                                                        creatNewParking.setVisibility(View.INVISIBLE);
                                                             click = false;
 
                                                         System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
@@ -301,8 +299,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                         currentWindow.dismiss();
                                         click = true;
                                         goToDirections.hide();
-                                        creatNewParking.show();
-                                        resetData.show();
+                                        creatNewParking.setVisibility(View.VISIBLE);
+                                        resetData.setVisibility(View.VISIBLE);
                                         currentLocation.setVisibility(View.VISIBLE);
                                     }
                                     return false;

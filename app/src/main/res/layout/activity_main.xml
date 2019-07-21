@@ -28,9 +28,11 @@
         android:clickable="true"
         android:scaleX="1.3"
         android:scaleY="1.3"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@tools:sample/avatars"
+        android:visibility="invisible"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <ImageButton
+        android:background="@color/transparent"
         android:id="@+id/add_Parking_structure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,9 +41,9 @@
         android:layout_marginEnd="25dp"
         android:layout_marginBottom="212dp"
         android:clickable="true"
-        android:scaleX="1.3"
-        android:scaleY="1.3"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:scaleX="2.0"
+        android:scaleY="2.0"
+        android:src="@drawable/ic_add_location" />
 
     <ImageButton
         android:background="@color/transparent"
@@ -85,7 +87,8 @@
     </LinearLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
+    <ImageButton
+        android:background="@color/transparent"
         android:id="@+id/Toggle_Heatmap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -94,9 +97,12 @@
         android:layout_marginStart="25dp"
         android:layout_marginBottom="30dp"
         android:clickable="true"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:scaleY="2.0"
+        android:scaleX="2.0"
+        android:src="@drawable/ic_ice_blue" />
 
-    <android.support.design.widget.FloatingActionButton
+    <ImageButton
+        android:background="@color/transparent"
         android:id="@+id/reset_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -105,9 +111,9 @@
         android:layout_marginStart="25dp"
         android:layout_marginBottom="212dp"
         android:clickable="true"
-        android:scaleX="1.3"
-        android:scaleY="1.3"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:scaleX="2.0"
+        android:scaleY="2.0"
+        android:src="@drawable/ic_refresh" />
 
 
 </RelativeLayout>
