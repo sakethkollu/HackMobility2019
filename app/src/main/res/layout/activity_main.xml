@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/main_layout">
 
     <fragment
         android:id="@+id/mapfragment"
@@ -36,14 +37,15 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_gravity="end|bottom"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="31dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="30dp"
         android:clickable="true"
         android:scaleX="1"
         android:scaleY="1"
         app:srcCompat="@color/colorPrimary" />
 
     <EditText
+
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,6 +63,16 @@
         android:gravity=""
         />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/Toggle_Heatmap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="30dp"
+        android:clickable="true"
+        tools:srcCompat="@tools:sample/avatars" />
 
 
 </RelativeLayout>

@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -83,7 +84,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static KDTree parkingCoordinates;
     public FloatingActionButton currentLocation;
     public FloatingActionButton goToDirections;
+    public FloatingActionButton toggleHeatmap;
     private GeoCoordinate currentMarker;
+    private RelativeLayout mainLayout;
 
 
     @Override
@@ -104,22 +107,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         goToDirections = findViewById(R.id.go_button);
         goToDirections.hide();
 
+        toggleHeatmap = findViewById(R.id.Toggle_Heatmap);
 
-        currentLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
-        goToDirections.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Directions(currentMarker);
-            }
-        });
-
-        //jas
+        //mainLayout.setBackground(getResources().getDrawable(R.drawable.background));
 
         if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
 
@@ -128,6 +118,44 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        toggleHeatmap.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                heatMap.toggle();
+            }
+        });
+
+        currentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if ( ContextCompat.checkSelfPermission( getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+
+                    ActivityCompat.requestPermissions( getParent(), new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                }
+
+                fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        currentLatitude = location.getLatitude();
+                        currentLongitude = location.getLongitude();
+
+                        map.setCenter(new GeoCoordinate(currentLatitude , currentLongitude, 0.0), Map.Animation.LINEAR);
+                        map.setZoomLevel(0);
+                    }
+                });
+
+            }
+        });
+
+        goToDirections.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Directions(new Coordinate(currentMarker.getLatitude(),currentMarker.getLongitude()));
+            }
+        });
+
+        //jas
         fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
