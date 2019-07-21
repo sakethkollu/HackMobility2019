@@ -2,6 +2,9 @@ package com.example.jas10022.parkingapp;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
+import android.graphics.PointF;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -14,6 +17,13 @@ import android.util.Log;
 
 
 import android.location.LocationListener;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RatingBar;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,6 +47,7 @@ import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.SupportMapFragment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,16 +65,27 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     double currentLatitude;
     double currentLongitude;
     private FusedLocationProviderClient fusedLocationClient;
+    SupportMapFragment mapFragment;
+    int width;
+    int height;
 
     public static HashMap<Coordinate, ParkingLocation> dataMapGlobal;
+    boolean click = true;
+    private PopupWindow currentWindow;
     public static KDTree parkingCoordinates;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapfragment);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapfragment);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+        height = size.y;
         // initialize the Map Fragment and
         // retrieve the map that is associated to the fragment
 
@@ -130,16 +152,41 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                 if (viewObj.getBaseType() == ViewObject.Type.USER_OBJECT) {
                                                     if (((MapObject) viewObj).getType() == MapObject.Type.MARKER) {
 
-                                                        GeoCoordinate selectedPoint = ((MapMarker) viewObj).getCoordinate();
+                            mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
+                                @Override
+                                public boolean onTapEvent(PointF p) {
+                                    ArrayList<ViewObject> viewObjectList = (ArrayList<ViewObject>) map.getSelectedObjects(p);
+                                    if(click) {
+                                        for (ViewObject viewObject : viewObjectList) {
+                                            if (viewObject.getBaseType() == ViewObject.Type.USER_OBJECT) {
+                                                MapObject mapObject = (MapObject) viewObject;
+                                                if (mapObject.getType() == MapObject.Type.MARKER) {
+                                                    MapMarker selectedMarker = ((MapMarker) mapObject);
+                                                    GeoCoordinate currentMarker = selectedMarker.getCoordinate();
 
-                                                        System.out.println("Selected location is:  " + selectedPoint.getLatitude() + " : " + selectedPoint.getLongitude());
+                                                    currentWindow = newMarkerEventPopUp(4, currentMarker);
 
+                                                    if (click) {
+                                                        currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width/50, height / 30);
+                                                        //popUp.update(50, 50, 300, 80);
+                                                        click = false;
                                                     }
+                                                    System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
                                                 }
                                             }
-                                            return false;
                                         }
-                                    };
+                                    }else{
+                                        currentWindow.dismiss();
+                                        click = true;
+                                    }
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onLongPressEvent(PointF p) {
+                                    return false;
+                                }
+                            });
                         }
                     });
 
@@ -186,5 +233,68 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Log.d("Latitude","status");
+    }
+
+    public PopupWindow newMarkerEventPopUp(int rating, final GeoCoordinate location){
+
+        final PopupWindow eventPopUp = new PopupWindow(MainActivity.this);
+        LinearLayout eventLayout = new LinearLayout(MainActivity.this);
+        eventPopUp.setHeight(height/4);
+        eventPopUp.setWidth( width);
+        eventPopUp.setAnimationStyle(R.style.PopupAnimation);
+        eventPopUp.setBackgroundDrawable(new ColorDrawable(
+                android.graphics.Color.TRANSPARENT));
+
+        eventLayout.setGravity(Gravity.CENTER);
+        eventLayout.setMinimumWidth(2 * width / 3);
+        eventLayout.setOrientation(LinearLayout.HORIZONTAL);
+        eventLayout.setMinimumHeight((height / 3) + (height / 12));
+        eventLayout.setBackgroundResource(R.drawable.dark_opaque);
+
+        //change layout
+        eventLayout.addView(getLayoutInflater().inflate(R.layout.spot, null));
+        eventPopUp.setContentView(eventLayout);
+
+        //establish the Views
+        final RatingBar ratingBar = eventPopUp.getContentView().findViewById(R.id.ratingBar);
+        final Button parkedButton = eventPopUp.getContentView().findViewById(R.id.Parked_Button);
+        final Button ratingButton = eventPopUp.getContentView().findViewById(R.id.rating_button);
+
+        ratingBar.setNumStars(5);
+        ratingBar.setRating(rating);
+        ratingBar.setEnabled(false);
+
+        parkedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                parkedButton.setVisibility(View.INVISIBLE);
+                ratingButton.setVisibility(View.VISIBLE);
+                ratingBar.setNumStars(5);
+                ratingBar.setRating(0);
+                ratingBar.setEnabled(true);
+
+                ratingButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        int rating = Math.round(ratingBar.getRating());
+
+                        Coordinate clicked = new Coordinate(location.getLatitude(), location.getLongitude());
+                        ParkingLocation parkedLocation = dataMapGlobal.get(clicked);
+                        parkedLocation.addRating(rating);
+                        HashMap<String,Object> t = new HashMap<String, Object>();
+                        t.put("Rating",rating);
+                        db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
+                    }
+                });
+
+            }
+        });
+
+
+        return eventPopUp;
+
     }
 }
