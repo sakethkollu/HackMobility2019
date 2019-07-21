@@ -25,6 +25,10 @@ public class ParkingLot extends ParkingLocation {
         this.currentCapacity = currentCapacity;
     }
 
+    public long getMaxCap(){
+        return this.maxCapacity;
+    }
+
     public long getCurrentCapacity() {
         return currentCapacity;
     }

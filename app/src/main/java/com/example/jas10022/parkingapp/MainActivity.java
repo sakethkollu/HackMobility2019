@@ -493,7 +493,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             ParkingLot pl = (ParkingLot) dataMapGlobal.get(c);
             pl.setNumRatings(b.nextInt(100));
             pl.setRating(b.nextInt(5));
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < ((ParkingLot) dataMapGlobal.get(c)).getMaxCap(); i++) {
                 if(b.nextBoolean()){
                     pl.incrementCapactiy();
                 }
