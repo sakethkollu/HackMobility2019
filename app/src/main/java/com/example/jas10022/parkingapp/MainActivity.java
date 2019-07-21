@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
 
@@ -95,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         // retrieve the map that is associated to the fragment
         currentLocation = findViewById(R.id.curent_location);
         goToDirections = findViewById(R.id.go_button);
+        goToDirections.hide();
+
 
         currentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             DataGenerator dg = new DataGenerator(queryDocumentSnapshots);
                             dataMapGlobal = dg.getDataMap();
                             parkingCoordinates = dg.getParkingCoordinates();
+
                             //HeatmapOverlay dfkjdsl = new HeatmapOverlay(map);
                             Coordinate current = new Coordinate(currentLatitude, currentLongitude);
 
@@ -188,6 +192,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                         currentWindow = newMarkerEventPopUp((int) Math.round(pl.getRating()), currentMarker);
                                                             currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width / 50, height / 30);
                                                             //popUp.update(50, 50, 300, 80);
+                                                        goToDirections.show();
+                                                        currentLocation.hide();
                                                             click = false;
 
                                                         System.out.println("selected location: " + currentMarker.getLatitude() + " : " + currentMarker.getLongitude());
@@ -198,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                     }else{
                                         currentWindow.dismiss();
                                         click = true;
+                                        goToDirections.hide();
+                                        currentLocation.show();
                                     }
                                     return false;
 
@@ -210,6 +218,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                             });
                         }
                     });
+
+
+
 
                     //create a geoCordinate based off the long and latitude
                     //this is how you cna create a new Map Marker in a specified location
@@ -348,5 +359,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
         return eventPopUp;
 
+    }
+
+    public void randomizeData(){
+        Random b = new Random();
+        for(Coordinate c : dataMapGlobal.keySet()) {
+            ParkingLot pl = (ParkingLot) dataMapGlobal.get(c);
+            pl.setNumRatings(b.nextInt(100));
+            pl.setRating(b.nextInt(5));
+            for (int i = 0; i < 5; i++) {
+                if(b.nextBoolean()){
+                    pl.incrementCapactiy();
+                }
+            }
+            HashMap<String, Object> t = new HashMap<String, Object>();
+            t.put("Current Capacity", pl.getCurrentCapacity());
+            t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
+            t.put("Number of Ratings", pl.getNumRatings());
+            t.put("Rating", pl.getRating());
+
+
+            db.collection("Ratings").document(pl.getLocation().toString()).update(t);
+
+        }
     }
 }
