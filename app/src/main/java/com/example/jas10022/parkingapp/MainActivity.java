@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     // get to nearest and park there
                 }
                 else{
-                    
+
                     HashMap<String, Object> t = new HashMap<String, Object>();
                     t.put("Current Capacity", pl.getCurrentCapacity());
                     t.put("Location", new GeoPoint(pl.getLocation().getLatitude(), pl.getLocation().getLongitude()));
