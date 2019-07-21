@@ -156,8 +156,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                                                 if (mapObject.getType() == MapObject.Type.MARKER) {
                                                     MapMarker selectedMarker = ((MapMarker) mapObject);
                                                     GeoCoordinate currentMarker = selectedMarker.getCoordinate();
-
-                                                    currentWindow = newMarkerEventPopUp(4, currentMarker);
+                                                    ParkingLocation pl = dataMapGlobal.get(new Coordinate(currentMarker));
+                                                    currentWindow = newMarkerEventPopUp((int)Math.round(pl.getRating()), currentMarker);
 
                                                     if (click) {
                                                         currentWindow.showAtLocation(new LinearLayout(getBaseContext()), Gravity.BOTTOM, width/50, height / 30);
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                         t.put("Number of Ratings",parkedLocation.getNumRatings());
                         db.collection("Ratings").document(location.getLatitude() + ", " + location.getLongitude()).update(t);
 
-                        ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                        ParkingLocation pl = dataMapGlobal.get(clicked);
                         if (pl.getClass() == ParkingSpot.class){
                             //1 car only so set the occupied to true
                             ((ParkingSpot)pl).parkInSpot();
@@ -298,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                         }
 
                         parkedButton.setVisibility(View.VISIBLE);
+                        ratingButton.setVisibility(View.INVISIBLE);
                         ratingBar.setEnabled(false);
                         ratingBar.setNumStars(5);
                         ratingBar.setRating((float) pl.getRating());
@@ -305,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     }
                 });
 
-                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location.getLatitude(), location.getLongitude()));
+                ParkingLocation pl = dataMapGlobal.get(new Coordinate(location));
                 if (pl.getClass() == ParkingSpot.class){
                     //1 car only so set the occupied to true
                     ((ParkingSpot)pl).parkInSpot();
