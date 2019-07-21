@@ -18,6 +18,9 @@ public class Directions {
     double currentlat = MainActivity.currentLatitude;
     double currentlon = MainActivity.currentLatitude;
 
+    public Directions(GeoCoordinate endpoint){
+        this(new Coordinate(endpoint));
+    }
 
     public Directions (Coordinate endpoint){
         this(endpoint.getLatitude(), endpoint.getLongitude());
