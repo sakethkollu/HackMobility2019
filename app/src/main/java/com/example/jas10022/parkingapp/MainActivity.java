@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static Map map;
     public static double currentLatitude;
     public static double currentLongitude;
+
     private FusedLocationProviderClient fusedLocationClient;
     SupportMapFragment mapFragment;
     int width;
@@ -114,7 +115,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             public void onEngineInitializationCompleted(
                     OnEngineInitListener.Error error) {
 
-
+                currentLatitude = 37.78761;
+                currentLongitude = -122.39663;
                 if (error == OnEngineInitListener.Error.NONE) {
                     // now the map is ready to be used
                     map = mapFragment.getMap();
